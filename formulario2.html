@@ -29,11 +29,12 @@ $(document).ready(function(){
 		}
 	}
 	
+	//botao adicionar
 	$("#addBtn").click(function(){
 		var codigo = $("#codigo").val();
 		var produto = $("#produto").val();
 		var loja = $("#loja").val();
-		var tmpGarantia = $("#tmpGarantia");
+		var tmpGarantia = $("#tmpGarantia").val();
 
 		var transaction = db.transaction(["garantia"],"readwrite");
 		
@@ -48,9 +49,11 @@ $(document).ready(function(){
 		};
 	
 		var objectStore = transaction.objectStore("garantia");
-		objectStore.add({codigo: codigo, produto: produto});
+		objectStore.add({codigo: codigo, produto: produto, loja: loja, tmpGarantia: tmpGarantia});
+
 	});
 
+	//Botao remover
 	$("#removeBtn").click(function (){
 		var codigo = $("#codigo").val();
 		var transaction = db.transaction(["garantia"],"readwrite");
@@ -60,14 +63,16 @@ $(document).ready(function(){
 		};
 	});
 
-	$("#getBtn").click(function() {
+	//Botao atualizar
+	$("#getBtn").click(function(){
 		var codigo = $("#codigo").val();
-		var transaction = db.transaction(["garantia"],"readwrite").objectStore("garantia").get(codigo);
-		request.onsucess = function (event) {
-		$("#request").html(request.result.nome);
+		var request = db.transaction(["garantia"],"readwrite").objectStore("garantia").get(codigo);
+		request.onsuccess = function(event){
+			$("#result").html("produto : "+request.result.produto);
 		};
 	});
 
+	//Botao Update
 	$("updateBtn").click(function (){
 		var codigo = $("#codigo").val();
 		var transaction = db.transaction(["garantia"],"readwrite");
@@ -75,8 +80,8 @@ $(document).ready(function(){
 		var request = objectStore.get(codigo);
 
 		request.onsucess = function(event) {
-		$("#request").html("Atualizando: " + request.result.nome + "para " +nome);
-		request.result.nome = nome;
+		$("#request").html("Atualizando: " + request.result.produto + "para " +produto);
+		request.result.produto = produto;
 		objectStore.put(request.result);
 		};
 	})
@@ -115,8 +120,8 @@ $(document).ready(function(){
 			<input type="button" name="addBtn" value="Adicionar" id="addBtn"/>
 			<input type="button" name="removeBtn" value="Remover" id="removeBtn"/>
 			<input type="button" name="getBtn" value="Localizar" id="getBtn"/>
-			<input type="button" name="updateBtn" value="Atualizar" id="updateBtn"/>
-			<input type="button" name="listBtn" value="Listar" id="listBtn"/>
+			<!-- <input type="button" name="updateBtn" value="Atualizar" id="updateBtn"/> -->
+			<!-- <input type="button" name="listBtn" value="Listar" id="listBtn"/> -->
 			</td>
 		<td width="3%">&nbsp;</td>
 	</tr>
