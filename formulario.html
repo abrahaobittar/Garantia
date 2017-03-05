@@ -8,7 +8,7 @@
 
 	</head>
 	<body>
-	<form action="script.php" class="form-horizontal" method="post">
+	<form action="testeWriter.php" class="form-horizontal" method="post">
 		<fieldset>
 		
 		<legend>Nova Garantia</legend>
@@ -45,11 +45,11 @@
 		  </div>
 		</div>
 		
-		<!-- garantiaComprador input-->
+		<!-- garantiaLoja input-->
 		<div class="form-group">
-		  <label class="col-md-4 control-label" for="garantiaComprador">Garantia do Comprador</label>  
+		  <label class="col-md-4 control-label" for="garantiaLoja">Garantia da loja</label>  
 		  <div class="col-md-4">
-		  <input id="garantiaComprador" name="garantiaComprador" type="text" placeholder="nº de dias" class="form-control input-md">
+		  <input id="garantiaLoja" name="garantiaLoja" type="text" placeholder="nº de dias" class="form-control input-md">
 		  </div>
 		</div>
 		
@@ -61,22 +61,24 @@
 		  </div>
 		</div>
 		
-		<!-- Button --> 
-		<div class="form-group"> <label class="col-md-4 control-label" for="singlebutton">Cadastrar</label> 
-		<div class="col-md-4"> <button id="singlebutton" name="singlebutton" class="btn btn-primary">Enter</button>
-		</div> 
+		<!-- Button cadastrar --> 
+		<div class="form-group"> 
+			<label class="col-md-4 control-label" for="singlebutton">Cadastrar</label> 
+			<div class="col-md-4"> <button type="submit" id="singlebutton" name="singlebutton" class="btn btn-primary">Enter</button>
+			</div> 
 		</div>
 		
-  	<!-- Table -->
-  	<table class="table">
-  	</table>
-	</div>
-	
-	<div class="btn-group" data-toggle="buttons-radio">
-		<button type="button" class="btn btn-primary">teste</button>
-	</div>
-	
-	
+		<div class="form-group"> 
+			<label class="col-md-4 control-label" for="singlebutton">Remover</label> 
+			<div class="col-md-4"> <button type="submit" id="singlebutton" name="singlebutton2" class="btn btn-primary">Enter</button>
+			</div> 
+		</div>
+		
+				<div class="form-group"> 
+			<label class="col-md-4 control-label" for="singlebutton">Editar</label> 
+			<div class="col-md-4"> <button type="submit" id="singlebutton" name="singlebutton3" class="btn btn-primary">Enter</button>
+			</div> 
+		</div>
 	</body>
 </html>
 

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Garantia</title>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+	window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
+	var request, db;
+	if(!window.indexedDB)
+	{
+		console.log("Seu navegador não suporta o recurso HTML5 IndexedDB");
+	}
+	else
+	{
+		request = window.indexedDB.open("garantia", 2);
+		request.onerror = function(event){
+			console.log("Erro ao abrir o banco de dados", event);
+		}
+	
+		request.onupgradeneeded = function(event){
+			console.log("Atualizando");
+			db = event.target.result;
+			var objectStore = db.createObjectStore("garantia", { keyPath : "codigo" });
+		};
+		request.onsuccess = function(event){
+			console.log("Banco de dados aberto com sucesso :)");
+			db = event.target.result;
+		}
+	}
+	
+	$("#addBtn").click(function(){
+		var codigo = $("#codigo").val();
+		var produto = $("#produto").val();
+		var loja = $("#loja").val();
+		var tmpGarantia = $("#tmpGarantia");
+
+		var transaction = db.transaction(["garantia"],"readwrite");
+		
+		transaction.oncomplete = function(event) {
+			console.log("Sucesso :)");
+			$("#result").html("Adicionado com Sucesso");
+		};
+		
+		transaction.onerror = function(event) {
+			console.log("Erro :(");
+			$("#result").html("Erro ao Adicionar");
+		};
+	
+		var objectStore = transaction.objectStore("garantia");
+		objectStore.add({codigo: codigo, produto: produto});
+	});
+
+	$("#removeBtn").click(function (){
+		var codigo = $("#codigo").val();
+		var transaction = db.transaction(["garantia"],"readwrite");
+		db.transaction(["garantia"], "readwrite").objectStore("garantia").delete(codigo);
+		transaction.oncomplete = function(event) {
+			$("#result").html("removido");
+		};
+	});
+
+	$("#getBtn").click(function() {
+		var codigo = $("#codigo").val();
+		var transaction = db.transaction(["garantia"],"readwrite").objectStore("garantia").get(codigo);
+		request.onsucess = function (event) {
+		$("#request").html(request.result.nome);
+		};
+	});
+
+	$("updateBtn").click(function (){
+		var codigo = $("#codigo").val();
+		var transaction = db.transaction(["garantia"],"readwrite");
+		var objectStore = transaction.objectStore("garantia");
+		var request = objectStore.get(codigo);
+
+		request.onsucess = function(event) {
+		$("#request").html("Atualizando: " + request.result.nome + "para " +nome);
+		request.result.nome = nome;
+		objectStore.put(request.result);
+		};
+	})
+});	
+
+</script>
+</head>
+<body>
+<form>
+<table border="0" width="100%">
+	<tr>
+		<td colspan="3"><hr></td>
+	</tr>
+	<tr>
+		<td width="12%">Codigo</td>
+		<td colspan="2"> <input type="text" name="codigo" id="codigo"/></td>
+	</tr>
+	<tr>
+		<td width="12%">Produto</td>
+		<td colspan="2">  <input type="text" name="produto" id="produto" /></td>
+	</tr>
+
+	<tr>
+		<td width="12%">Loja</td>
+		<td colspan="2">  <input type="text" name="loja" id="loja" /></td>
+	</tr>
+	
+	<tr>
+		<td width="12%">Tempo de Garantia</td>
+		<td colspan="2">  <input type="text" name="tmpGarantia" id="tmpGarantia" /></td>
+	</tr>
+	
+	<tr>
+		<td width="12%">&nbsp;</td>
+		<td>
+			<input type="button" name="addBtn" value="Adicionar" id="addBtn"/>
+			<input type="button" name="removeBtn" value="Remover" id="removeBtn"/>
+			<input type="button" name="getBtn" value="Localizar" id="getBtn"/>
+			<input type="button" name="updateBtn" value="Atualizar" id="updateBtn"/>
+			<input type="button" name="listBtn" value="Listar" id="listBtn"/>
+			</td>
+		<td width="3%">&nbsp;</td>
+	</tr>
+</table>
+</form>
+<div id="result"></div>
+</body>
+</html>
