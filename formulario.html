@@ -3,6 +3,8 @@
 <head>
 <title>Garantia</title>
 <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+<!-- <script type="text/javascript" src="http://code.jquery.com/jquery-3.1.1.min.js"></script> -->
+
 <script type="text/javascript">
 $(document).ready(function(){
 	window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
@@ -50,8 +52,30 @@ $(document).ready(function(){
 	
 		var objectStore = transaction.objectStore("garantia");
 		objectStore.add({codigo: codigo, produto: produto, loja: loja, tmpGarantia: tmpGarantia});
-
 	});
+
+	//botao listar
+	$("#listBtn").click(function(){
+		var transaction = db.transaction("garantia","readonly");
+		var objectStore = transaction.objectStore("garantia");
+		var request = objectStore.openCursor();
+		
+		request.onsuccess = function(){
+			var cursor = request.result;
+			var objectList = [];
+			
+			if(cursor) {
+				//console.log(cursor.value.id,cursor.value.produto,cursor.value.loja,cursor.value.tmpGarantia);
+				objectList.push(cursor.value.id+" "+cursor.value.produto+" "+cursor.value.loja+" "++cursor.value.tmpGarantia);
+				cursor.continue();
+				console.log(objectList);
+
+			} else {
+				console.log("Nao tem mais objetos");
+			}
+		};
+		
+	})
 
 	//Botao remover
 	$("#removeBtn").click(function (){
@@ -124,6 +148,7 @@ $(document).ready(function(){
 			<input type="button" name="removeBtn" value="Remover" id="removeBtn"/>
 			<input type="button" name="getBtn" value="Localizar" id="getBtn"/>
 			<input type="button" name="updateBtn" value="Atualizar" id="updateBtn"/>
+			<input type="button" name="listBtn" value="Listar" id="listBtn"/>
 			
 			<!-- <input type="button" name="listBtn" value="Listar" id="listBtn"/> -->
 			</td>
