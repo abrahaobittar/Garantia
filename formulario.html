@@ -1,84 +1,136 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
-	<title>Garantia</title>
+<head>
+<title>Garantia</title>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+	window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
+	var request, db;
+	if(!window.indexedDB)
+	{
+		console.log("Seu navegador não suporta o recurso HTML5 IndexedDB");
+	}
+	else
+	{
+		request = window.indexedDB.open("garantia", 2);
+		request.onerror = function(event){
+			console.log("Erro ao abrir o banco de dados", event);
+		}
 	
-	<head>
-		<meta http-equiv="content-type" content="text/html charset=UTF-8">
-		<link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
+		request.onupgradeneeded = function(event){
+			console.log("Atualizando");
+			db = event.target.result;
+			var objectStore = db.createObjectStore("garantia", { keyPath : "codigo" });
+		};
+		request.onsuccess = function(event){
+			console.log("Banco de dados aberto com sucesso :)");
+			db = event.target.result;
+		}
+	}
+	
+	//botao adicionar
+	$("#addBtn").click(function(){
+		var codigo = $("#codigo").val();
+		var produto = $("#produto").val();
+		var loja = $("#loja").val();
+		var tmpGarantia = $("#tmpGarantia").val();
 
-	</head>
-	<body>
-	<form action="testeWriter.php" class="form-horizontal" method="post">
-		<fieldset>
+		var transaction = db.transaction(["garantia"],"readwrite");
 		
-		<legend>Nova Garantia</legend>
+		transaction.oncomplete = function(event) {
+			console.log("Sucesso :)");
+			$("#result").html("Adicionado com Sucesso");
+		};
 		
-		<!-- produto input-->
-		<div class="form-group">
-		  <label class="col-md-4 control-label" for="produto">Produto/Serviço</label>  
-		  <div class="col-md-6">
-		  <input id="produto" name="produto" type="text" class="form-control input-md">
-		  </div>
-		</div>
-		
-		<!-- loja input-->
-		<div class="form-group">
-		  <label class="col-md-4 control-label" for="loja">Loja</label>  
-		  <div class="col-md-6">
-		  <input id="loja" name="loja" type="text" class="form-control input-md">
-		  </div>
-		</div>
-		
-		<!-- valor input-->
-		<div class="form-group">
-		  <label class="col-md-4 control-label" for="valor">Valor</label>  
-		  <div class="col-md-4">
-		  <input id="valor" name="valor" type="text" placeholder="valor do produto" class="form-control input-md">
-		  </div>
-		</div>
-		
-		<!-- dataCompra input-->
-		<div class="form-group">
-		  <label class="col-md-4 control-label" for="dataCompra">Data da Compra</label>  
-		  <div class="col-md-4">
-		  <input id="dataCompra" name="dataCompra" type="text" class="form-control input-md">
-		  </div>
-		</div>
-		
-		<!-- garantiaLoja input-->
-		<div class="form-group">
-		  <label class="col-md-4 control-label" for="garantiaLoja">Garantia da loja</label>  
-		  <div class="col-md-4">
-		  <input id="garantiaLoja" name="garantiaLoja" type="text" placeholder="nº de dias" class="form-control input-md">
-		  </div>
-		</div>
-		
-		<!-- garantiaFabrica input-->
-		<div class="form-group">
-		  <label class="col-md-4 control-label" for="garantiaFabrica">Garantia de Fábrica</label>  
-		  <div class="col-md-4">
-		  <input id="garantiaFabrica" name="garantiaFabrica" type="text" placeholder="nº de dias" class="form-control input-md">
-		  </div>
-		</div>
-		
-		<!-- Button cadastrar --> 
-		<div class="form-group"> 
-			<label class="col-md-4 control-label" for="singlebutton">Cadastrar</label> 
-			<div class="col-md-4"> <button type="submit" id="singlebutton" name="singlebutton" class="btn btn-primary">Enter</button>
-			</div> 
-		</div>
-		
-		<div class="form-group"> 
-			<label class="col-md-4 control-label" for="singlebutton">Remover</label> 
-			<div class="col-md-4"> <button type="submit" id="singlebutton" name="singlebutton2" class="btn btn-primary">Enter</button>
-			</div> 
-		</div>
-		
-				<div class="form-group"> 
-			<label class="col-md-4 control-label" for="singlebutton">Editar</label> 
-			<div class="col-md-4"> <button type="submit" id="singlebutton" name="singlebutton3" class="btn btn-primary">Enter</button>
-			</div> 
-		</div>
-	</body>
+		transaction.onerror = function(event) {
+			console.log("Erro :(");
+			$("#result").html("Erro ao Adicionar");
+		};
+	
+		var objectStore = transaction.objectStore("garantia");
+		objectStore.add({codigo: codigo, produto: produto, loja: loja, tmpGarantia: tmpGarantia});
+
+	});
+
+	//Botao remover
+	$("#removeBtn").click(function (){
+		var codigo = $("#codigo").val();
+		var transaction = db.transaction(["garantia"],"readwrite");
+		db.transaction(["garantia"], "readwrite").objectStore("garantia").delete(codigo);
+		transaction.oncomplete = function(event) {
+			$("#result").html("removido");
+		};
+	});
+
+	//Botao atualizar
+	$("#getBtn").click(function(){
+		var codigo = $("#codigo").val();
+		var request = db.transaction(["garantia"],"readwrite").objectStore("garantia").get(codigo);
+		request.onsuccess = function(event){
+			$("#result").html("produto : "+request.result.produto);
+		};
+	});
+
+	//Botao Update
+	$("updateBtn").click(function (){
+		var codigo = $("#codigo").val();
+		var transaction = db.transaction(["garantia"],"readwrite");
+		var objectStore = transaction.objectStore("garantia");
+		var request = objectStore.get(codigo);
+
+		request.onsucess = function(event) {
+		$("#request").html("Atualizando: " + request.result.produto + "para " +produto);
+		request.result.produto = produto;
+		objectStore.put(request.result);
+		};
+	})
+});	
+
+</script>
+</head>
+<body>
+<form>
+<table border="0" width="100%">
+	<tr>
+		<td colspan="3"><hr></td>
+	</tr>
+	<tr>
+		<td width="12%">Codigo</td>
+		<td colspan="2"> <input type="text" name="codigo" id="codigo"/></td>
+	</tr>
+	<tr>
+		<td width="12%">Produto</td>
+		<td colspan="2">  <input type="text" name="produto" id="produto" /></td>
+	</tr>
+
+	<tr>
+		<td width="12%">Loja</td>
+		<td colspan="2">  <input type="text" name="loja" id="loja" /></td>
+	</tr>
+	
+	<tr>
+		<td width="12%">Tempo de Garantia</td>
+		<td colspan="2">  <input type="text" name="tmpGarantia" id="tmpGarantia" />
+			Mes<input type="radio"  name="mesGarantia" value="Meses" id="mesGarantia" />
+			Ano<input type="radio"  name="anoGarantia" value="Anos" id="anoGarantia" />
+		</td>
+	</tr>
+	
+	<tr>
+		<td width="12%">&nbsp;</td>
+		<td>
+			<input type="button" name="addBtn" value="Adicionar" id="addBtn"/>
+			<input type="button" name="removeBtn" value="Remover" id="removeBtn"/>
+			<input type="button" name="getBtn" value="Localizar" id="getBtn"/>
+			<input type="button" name="updateBtn" value="Atualizar" id="updateBtn"/>
+			
+			<!-- <input type="button" name="listBtn" value="Listar" id="listBtn"/> -->
+			</td>
+		<td width="3%">&nbsp;</td>
+	</tr>
+</table>
+</form>
+<div id="result"></div>
+</body>
 </html>
-
