@@ -9,12 +9,9 @@
 $(document).ready(function(){
 	window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
 	var request, db;
-	if(!window.indexedDB)
-	{
+	if(!window.indexedDB){
 		console.log("Seu navegador não suporta o recurso HTML5 IndexedDB");
-	}
-	else
-	{
+	} else{
 		request = window.indexedDB.open("garantia", 2);
 		request.onerror = function(event){
 			console.log("Erro ao abrir o banco de dados", event);
@@ -23,7 +20,8 @@ $(document).ready(function(){
 		request.onupgradeneeded = function(event){
 			console.log("Atualizando");
 			db = event.target.result;
-			var objectStore = db.createObjectStore("garantia", { keyPath : "codigo" });
+			//var objectStore = db.createObjectStore("garantia", { keyPath : "codigo" });
+			var objectStore = db.createObjectStore("garantia", { keyPath: "id", autoIncrement:true });
 		};
 		request.onsuccess = function(event){
 			console.log("Banco de dados aberto com sucesso :)");
@@ -33,7 +31,7 @@ $(document).ready(function(){
 	
 	//botao adicionar
 	$("#addBtn").click(function(){
-		var codigo = $("#codigo").val();
+		//var codigo = $("#codigo").val(); Nao vai mais porque estou usando autoIncrement
 		var produto = $("#produto").val();
 		var loja = $("#loja").val();
 		var tmpGarantia = $("#tmpGarantia").val();
@@ -41,8 +39,12 @@ $(document).ready(function(){
 		var transaction = db.transaction(["garantia"],"readwrite");
 		
 		transaction.oncomplete = function(event) {
-			console.log("Sucesso :)");
-			$("#result").html("Adicionado com Sucesso");
+			console.log("addBtn: Registro Adicionado com Sucesso ");
+			$("#result").html("Registro Adicionado com Sucesso");
+
+			setTimeout(function() {
+				$("#result").html("");
+			},2000);
 		};
 		
 		transaction.onerror = function(event) {
@@ -56,25 +58,25 @@ $(document).ready(function(){
 
 	//botao listar
 	$("#listBtn").click(function(){
+		$("#tabela").html("");
 		var transaction = db.transaction("garantia","readonly");
 		var objectStore = transaction.objectStore("garantia");
 		var request = objectStore.openCursor();
-		
+
 		request.onsuccess = function(){
 			var cursor = request.result;
-			var objectList = [];
-			
-			if(cursor) {
-				//console.log(cursor.value.id,cursor.value.produto,cursor.value.loja,cursor.value.tmpGarantia);
-				objectList.push(cursor.value.id+" "+cursor.value.produto+" "+cursor.value.loja+" "++cursor.value.tmpGarantia);
-				cursor.continue();
-				console.log(objectList);
 
-			} else {
+			if(cursor) {
+			//console.log(cursor.value.id+" "+cursor.value.produto+" "+cursor.value.loja+" "+cursor.value.tmpGarantia);
+				$("#tabela").append("<tr><td>"+cursor.value.id+
+										"</td><td>"+cursor.value.produto+"</td>"+
+										"<td>"+cursor.value.loja+"</td>"+
+										"<td>"+cursor.value.tmpGarantia+"</td>");
+				cursor.continue();
+			}else{
 				console.log("Nao tem mais objetos");
 			}
 		};
-		
 	})
 
 	//Botao remover
@@ -157,5 +159,20 @@ $(document).ready(function(){
 </table>
 </form>
 <div id="result"></div>
+
+<table>
+	<thead>
+		<tr>
+				<th>ID</th>
+				<th>Produto</th>
+				<th>Loja</th>
+				<th>Tempo de Garantia</th>
+		</tr>
+		<tbody id="tabela">
+		</tbody>
+	</thead>
+</table>
+
 </body>
 </html>
+
