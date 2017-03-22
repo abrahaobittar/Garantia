@@ -6,6 +6,8 @@
 <!-- <script type="text/javascript" src="http://code.jquery.com/jquery-3.1.1.min.js"></script> -->
 
 <script type="text/javascript">
+
+
 $(document).ready(function(){
 	window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
 	var request, db;
@@ -35,7 +37,6 @@ $(document).ready(function(){
 		var produto = $("#produto").val();
 		var loja = $("#loja").val();
 		var tmpGarantia = $("#tmpGarantia").val();
-
 		var transaction = db.transaction(["garantia"],"readwrite");
 		
 		transaction.oncomplete = function(event) {
@@ -53,7 +54,7 @@ $(document).ready(function(){
 		};
 	
 		var objectStore = transaction.objectStore("garantia");
-		objectStore.add({codigo: codigo, produto: produto, loja: loja, tmpGarantia: tmpGarantia});
+		objectStore.add({produto: produto, loja: loja, tmpGarantia: tmpGarantia});
 	});
 
 	//botao listar
@@ -62,16 +63,16 @@ $(document).ready(function(){
 		var transaction = db.transaction("garantia","readonly");
 		var objectStore = transaction.objectStore("garantia");
 		var request = objectStore.openCursor();
-
+		
 		request.onsuccess = function(){
 			var cursor = request.result;
-
+			
 			if(cursor) {
-			//console.log(cursor.value.id+" "+cursor.value.produto+" "+cursor.value.loja+" "+cursor.value.tmpGarantia);
 				$("#tabela").append("<tr><td>"+cursor.value.id+
 										"</td><td>"+cursor.value.produto+"</td>"+
 										"<td>"+cursor.value.loja+"</td>"+
-										"<td>"+cursor.value.tmpGarantia+"</td>");
+										"<td>"+cursor.value.tmpGarantia+"</td>"+
+										"<td><button>Editar</button> <button name=\"removeBtn\" id=\"removeBtn\">Remover</button></td>");
 				cursor.continue();
 			}else{
 				console.log("Nao tem mais objetos");
@@ -81,20 +82,25 @@ $(document).ready(function(){
 
 	//Botao remover
 	$("#removeBtn").click(function (){
-		var codigo = $("#codigo").val();
+		var codigo = parseInt($("#codigo").val());
+		//var t = parseInt(codigo);
 		var transaction = db.transaction(["garantia"],"readwrite");
-		db.transaction(["garantia"], "readwrite").objectStore("garantia").delete(codigo);
-		transaction.oncomplete = function(event) {
-			$("#result").html("removido");
+		var objectStore = transaction.objectStore("garantia");
+		var request = objectStore.delete(codigo);
+		
+		request.oncomplete = function(event){
+			$("#result").html("removido com sucesso");
+			console.log("removeBtn: Removido com sucesso");
+			console.log(request.result);
 		};
 	});
 
-	//Botao atualizar
+	//Botao Localizar
 	$("#getBtn").click(function(){
 		var codigo = $("#codigo").val();
 		var request = db.transaction(["garantia"],"readwrite").objectStore("garantia").get(codigo);
 		request.onsuccess = function(event){
-			$("#result").html("produto : "+request.result.produto);
+			$("#result").html("produto : "+request.result.id);
 		};
 	});
 
@@ -112,6 +118,8 @@ $(document).ready(function(){
 		};
 	})
 });	
+
+
 
 </script>
 </head>
