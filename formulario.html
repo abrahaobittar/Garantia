@@ -35,9 +35,12 @@
 				//var codigo = $("#codigo").val(); Nao vai mais porque estou usando autoIncrement
 				var produto = $("#produto").val();
 				var loja = $("#loja").val();
-				var tmpGarantia = $("#tmpGarantia").val();
+				var tmpGarantia = parseInt($("#tmpGarantia").val());
+				var radioBtn = $("input[name='radioBtn']:checked").val();
 				var transaction = db.transaction(["garantia"], "readwrite");
-
+				console.log(radioBtn);
+				tmpGarantia = (tmpGarantia * radioBtn);
+				console.log(tmpGarantia);
 				transaction.oncomplete = function (event) {
 					console.log("addBtn: Registro Adicionado com Sucesso ");
 					$("#result").html("Registro Adicionado com Sucesso");
@@ -70,8 +73,8 @@
 						$("#tabela").append("<tr><td>" + cursor.value.id +
 							"</td><td>" + cursor.value.produto + "</td>" +
 							"<td>" + cursor.value.loja + "</td>" +
-							"<td>" + cursor.value.tmpGarantia + "</td>" +
-							"<td><button>Editar</button> <button name=\"removeBtn\" id=\"removeBtn\">Remover</button></td>");
+							"<td>" + cursor.value.tmpGarantia+" dias"+ "</td>");
+							//"<td><button>Editar</button> <button name=\"removeBtn\" id=\"removeBtn\">Remover</button></td>");
 						cursor.continue();
 					} else {
 						console.log("Nao tem mais objetos");
@@ -82,7 +85,6 @@
 			//Botao remover
 			$("#removeBtn").click(function () {
 				var codigo = parseInt($("#codigo").val());
-				//var t = parseInt(codigo);
 				var transaction = db.transaction(["garantia"], "readwrite");
 				var objectStore = transaction.objectStore("garantia");
 				var request = objectStore.delete(codigo);
@@ -94,34 +96,32 @@
 				};
 			});
 
-			//Botao Localizar
+				//Botao getBtn
 			$("#getBtn").click(function () {
-				var codigo = parseInt($("#codigo").val());
-				var request = db.transaction(["garantia"], "readwrite").objectStore("garantia").get(codigo);
+				console.log("#getBtn")
+				var codigo = $("#codigo").val();
+				var request = db.transaction(["garantia"], "readwrite").objectStore("garantia").get(18);
+							
 				request.onsuccess = function (event) {
-					$("#tabela").append("<tr><td>" + cursor.value.id +
-						"</td><td>" + cursor.value.produto + "</td>" +
-						"<td>" + cursor.value.loja + "</td>" +
-						"<td>" + cursor.value.tmpGarantia + "</td>");
+				$("#result").html("produto: "+request.result.produto);
 				};
 			});
 
 			//Botao Update
-			$("updateBtn").click(function () {
-				var codigo = parseInt($("#codigo").val());
-				var transaction = db.transaction(["garantia"], "readwrite");
-				var objectStore = transaction.objectStore("garantia");
-				var request = objectStore.get(codigo);
-
-				request.onsucess = function (event) {
-					$("#request").html("Atualizando: " + request.result.produto + "para " + produto);
-					request.result.produto = produto;
-					objectStore.put(request.result);
-				};
-			})
-
+			/*			$("updateBtn").click(function () {
+							var codigo = parseInt($("#codigo").val());
+							var transaction = db.transaction(["garantia"], "readwrite");
+							var objectStore = transaction.objectStore("garantia");
+							var request = objectStore.get(codigo);
+			
+							request.onsucess = function (event) {
+								$("#request").html("Atualizando: " + request.result.produto + "para " + produto);
+								request.result.produto = produto;
+								objectStore.put(request.result);
+							};
+						})
+			*/
 		});
-
 	</script>
 </head>
 
@@ -150,8 +150,8 @@
 			<tr>
 				<td width="12%">Tempo de Garantia</td>
 				<td colspan="2"> <input type="text" name="tmpGarantia" id="tmpGarantia" /> Mes
-					<input type="radio" name="mesGarantia" value="Meses" id="mesGarantia" /> Ano
-					<input type="radio" name="anoGarantia" value="Anos" id="anoGarantia" />
+					<input type="radio" name="radioBtn" value=30 id="garantiaMes" /> Ano
+					<input type="radio" name="radioBtn" value=365 id="garantiaAno" />
 				</td>
 			</tr>
 
@@ -159,12 +159,10 @@
 				<td width="12%">&nbsp;</td>
 				<td>
 					<input type="button" name="addBtn" value="Adicionar" id="addBtn" />
-					<input type="button" name="removeBtn" value="Remover" id="removeBtn" />
-					<input type="button" name="getBtn" value="Localizar" id="getBtn" />
-					<input type="button" name="updateBtn" value="Atualizar" id="updateBtn" />
+					<input type="button" name="removeBtn" value="Remover" id="removeBtn_" />
+					<!-- <input type="button" name="updateBtn" value="Atualizar" id="updateBtn" /> -->
 					<input type="button" name="listBtn" value="Listar" id="listBtn" />
-
-					<!-- <input type="button" name="listBtn" value="Listar" id="listBtn"/> -->
+					<input type="button" name="getBtn" value="getBtn" id="getBtn" />
 				</td>
 				<td width="3%">&nbsp;</td>
 			</tr>
