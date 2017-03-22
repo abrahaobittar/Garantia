@@ -3,8 +3,8 @@
 
 <head>
 	<title>Garantia</title>
-	<script type="text/javascript" src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
-	<!-- <script type="text/javascript" src="http://code.jquery.com/jquery-3.1.1.min.js"></script> -->
+	<!--<script type="text/javascript" src="http://code.jquery.com/jquery-1.10.2.min.js"></script> -->
+	<script type="text/javascript" src="http://code.jquery.com/jquery-3.1.1.min.js"></script>
 
 	<script type="text/javascript">
 		$(document).ready(function () {
@@ -134,8 +134,8 @@
 				</td>
 			</tr>
 			<tr>
-				<td width="12%">Codigo</td>
-				<td colspan="2"> <input type="text" name="codigo" id="codigo" /></td>
+				<td width="12%">Codigo</td> 
+				<td colspan="2"> <input type="text" name="codigo" id="codigo" /> Não usar para cadastrar</td>
 			</tr>
 			<tr>
 				<td width="12%">Produto</td>
@@ -149,8 +149,8 @@
 
 			<tr>
 				<td width="12%">Tempo de Garantia</td>
-				<td colspan="2"> <input type="text" name="tmpGarantia" id="tmpGarantia" /> Mes
-					<input type="radio" name="radioBtn" value=30 id="garantiaMes" /> Ano
+				<td colspan="2"> <input type="text" name="tmpGarantia" id="tmpGarantia" /> Meses
+					<input type="radio" name="radioBtn" checked value=30 id="garantiaMes" /> Anos
 					<input type="radio" name="radioBtn" value=365 id="garantiaAno" />
 				</td>
 			</tr>
@@ -159,7 +159,7 @@
 				<td width="12%">&nbsp;</td>
 				<td>
 					<input type="button" name="addBtn" value="Adicionar" id="addBtn" />
-					<input type="button" name="removeBtn" value="Remover" id="removeBtn_" />
+					<input type="button" name="removeBtn" value="Remover" id="removeBtn" />
 					<!-- <input type="button" name="updateBtn" value="Atualizar" id="updateBtn" /> -->
 					<input type="button" name="listBtn" value="Listar" id="listBtn" />
 					<input type="button" name="getBtn" value="getBtn" id="getBtn" />
