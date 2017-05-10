@@ -4,32 +4,41 @@
 <head>
 	<title>Garantia</title>
 	<script type="text/javascript" src="http://code.jquery.com/jquery-3.1.1.min.js"></script>
-
 	<script type="text/javascript">
-		var request  = window.indexedDB.open("garantia",2);
-		var db2;
+	
+		var request = window.indexedDB.open("garantia",2);
+		var db;
 		var obj = {};
 		
 		function removerItemGarantia(objeto) {
 			obj = objeto;
-			var transaction = db2.transaction(["garantia"], "readwrite");
+			var transaction = db.transaction(["garantia"], "readwrite");
 			var objectStore = transaction.objectStore("garantia");
 			var request = objectStore.delete(obj.id);
+			mostraListaGarantia();
 
 			request.onsucess = function (event) {
-				mostraListaGarantia();
 				console.log("listarGarantia");
 			};
-		}
+		} //fim removerItemGarantia
 
-		function teste() {
-			alert('aaaa');
-		}
+		function limpaForm(){
+			$("#produto").val("");
+			$("#loja").val("");
+			$("#tmpGarantia").val("");
+		}//fim limaForm
+
+		function editarItemGarantia(objeto) {
+			obj = objeto;
+			$("#produto").val(obj.produto);
+			$("#loja").val(obj.loja);
+			$("#tmpGarantia").val(obj.tmpGarantia);
+		} //fim editorItemGarantia
 
 		function mostraListaGarantia() {
-			$("#tabelaGarantia").html("law");
+			$("#tabelaGarantia").html("");
 				console.log("abriu a funcao mostraListaGarantia");
-				var transaction = db2.transaction(["garantia"], "readonly");
+				var transaction = db.transaction(["garantia"], "readonly");
 				var objectStore = transaction.objectStore("garantia");
 				var request = objectStore.openCursor();
 
@@ -59,7 +68,7 @@
 						$("#tabelaGarantia").append(tr);
 
 					tdEditButton.click({obj: cursor.value}, function (event) {
-							
+						editarItemGarantia(event.data.obj);	
 					});
 
 					tdDeleteButton.click({obj: cursor.value}, function (event) {
@@ -71,9 +80,9 @@
 						console.log("Nao tem mais objetos");
 					}
 				};
-			}
-
-
+			} //fim mostraListaGarantia
+		
+		//indexedDB
 		$(document).ready(function () {
 			window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
 
@@ -86,25 +95,24 @@
 
 				request.onupgradeneeded = function (event) {
 					console.log("Atualizando");
-					db2 = event.target.result;
-					var objectStore = db2.createObjectStore("garantia", { keyPath: "id", autoIncrement: true });
+					db = event.target.result;
+					var objectStore = db.createObjectStore("garantia", { keyPath: "id", autoIncrement: true });
 				};
 
 				request.onsuccess = function (event) {
 					console.log("Banco de dados aberto com sucesso :)");
-					db2 = event.target.result;
+					db = event.target.result;
 
 				};
 			}
-
+				
 			//botao adicionar
 			$("#addBtn").click(function (){
-				//var codigo = $("#codigo").val(); Nao vai mais porque estou usando autoIncrement
 				var produto = $("#produto").val();
 				var loja = $("#loja").val();
 				var tmpGarantia = parseInt($("#tmpGarantia").val());
 				var radioBtn = $("input[name='radioBtn']:checked").val();
-				var transaction = db2.transaction(["garantia"], "readwrite");
+				var transaction = db.transaction(["garantia"], "readwrite");
 				console.log(radioBtn);
 				tmpGarantia = (tmpGarantia * radioBtn);
 				console.log(tmpGarantia);
@@ -112,7 +120,9 @@
 				transaction.oncomplete = function (event) {
 					console.log("addBtn: Registro Adicionado com Sucesso ");
 					$("#result").html("Registro Adicionado com Sucesso");
-					
+					mostraListaGarantia();
+					//limpaForm();
+
 					setTimeout(function () {
 						$("#result").html("");
 					}, 2000);
@@ -125,107 +135,14 @@
 
 				var objectStore = transaction.objectStore("garantia");
 				objectStore.add({ produto: produto, loja: loja, tmpGarantia: tmpGarantia });
-			})
-
-			//botao listar
-			$("#listBtn").click(function () {
-				$("#tabelaGarantia").html("");
-				var transaction = db2.transaction("garantia", "readonly");
-				var objectStore = transaction.objectStore("garantia");
-				var request = objectStore.openCursor();
-
-				request.onsuccess = function () {
-					var cursor = request.result;
-
-/*					if (cursor) {
-						$("#tabela").append("<tr><td>" + cursor.value.id +
-							"</td><td>" + cursor.value.produto + "</td>" +
-							"<td>" + cursor.value.loja + "</td>" +
-							"<td>" + cursor.value.tmpGarantia+" dias"+ "</td>"+
-							"<td><button>Editar</button> <button>Remover</button></td>");
-*/
-					if(cursor) {
-						var tr = jQuery("<tr></tr>");
-						var td = jQuery("<td>"+ cursor.value.id+ "</td>");
-						var tdProduto = jQuery("<td>"+cursor.value.produto+"</td>");
-						var tdLoja = jQuery("<td>"+cursor.value.loja+"</td>");
-						var tdTmpGarantia = jQuery("<td>"+cursor.value.tmpGarantia+"</td>");
-						var tdEdit = jQuery("<td></td>");
-						var tdEditButton = jQuery("<button>Editar</button>");
-						tdEditButton.appendTo(tdEdit);
-						var tdDelete = jQuery("<td></td>");
-						var tdDeleteButton = jQuery("<button>Deletar</button>");
-						tdDeleteButton.appendTo(tdDelete);
-						
-						td.appendTo(tr);
-						tdProduto.appendTo(tr);
-						tdLoja.appendTo(tr);
-						tdTmpGarantia.appendTo(tr);
-						tdEdit.appendTo(tr);
-						tdDelete.appendTo(tr);
-						
-						$("#tabelaGarantia").append(tr);
-
-					tdEditButton.click({obj: cursor.value}, function (event) {
-							editStudentRecord(event.data.obj);
-					});
-
-					tdDeleteButton.click({obj: cursor.value}, function (event) {
-						removerItemGarantia(event.data.obj);
-					});
-
-						cursor.continue();
-					} else {
-						console.log("Nao tem mais objetos");
-					}
-				};
-			});
-
-			//Botao remover
-/*			$("#removeBtn").click(function () {
-				var codigo = parseInt($("#codigo").val());
-				var transaction = db.transaction(["garantia"], "readwrite");
-				var objectStore = transaction.objectStore("garantia");
-				var request = objectStore.delete(codigo);
-
-				request.oncomplete = function (event) {
-					$("#result").html("removido com sucesso");
-					console.log("removeBtn: Removido com sucesso");
-					console.log(request.result);
-				};
-			});*/
-
-				//Botao getBtn
-			$("#getBtn").click(function () {
-				console.log("#getBtn")
-				var codigo = $("#codigo").val();
-				var request = db.transaction(["garantia"], "readwrite").objectStore("garantia").get(18);
-							
-				request.onsuccess = function (event) {
-				$("#result").html("produto: "+request.result.produto);
-				};
-			});
-
-			//Botao Update
-			/*			$("updateBtn").click(function () {
-							var codigo = parseInt($("#codigo").val());
-							var transaction = db.transaction(["garantia"], "readwrite");
-							var objectStore = transaction.objectStore("garantia");
-							var request = objectStore.get(codigo);
-			
-							request.onsucess = function (event) {
-								$("#request").html("Atualizando: " + request.result.produto + "para " + produto);
-								request.result.produto = produto;
-								objectStore.put(request.result);
-							};
-						})
-			*/
-		});
+			}); //fim adicionar
+		}); //fim indexedDB
 	</script>
 </head>
 
+<html>
 <body>
-	<form>
+	<form id="formulario" method="post">
 		<table border="0" width="100%">
 			<tr>
 				<td colspan="3">
@@ -259,7 +176,7 @@
 				<td>
 					<input type="button" name="addBtn" value="Adicionar" id="addBtn" />
 					<input type="button" name="removeBtn" value="Remover" id="removeBtn" />
-					<input type="button" name="listBtn" value="Listar" id="listBtn" />
+					<input type="button" onclick="mostraListaGarantia()" name="listBtn" value="Listar" id="listBtn" />
 					<input type="button" name="getBtn" value="getBtn" id="getBtn" />
 					<button id="edit" onclick="editClicked()">Edit</button>
 				</td>
@@ -282,5 +199,4 @@
 		</thead>
 	</table>
 </body>
-
 </html>
