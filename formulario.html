@@ -33,6 +33,10 @@
       isRTL: false,
       showMonthAfterYear: false,
       yearSuffix: ''};
+      
+    $.datepicker._gotoToday = function(id) { 
+    $(id).datepicker('setDate', new Date()).datepicker('hide').blur(); 
+};     
     
     $.datepicker.setDefaults($.datepicker.regional['pt-BR']);
     //implementando o datepicker
@@ -41,7 +45,16 @@
       showButtonPanel: true
       });
     });
-		
+
+    function somenteNumeros(numero){
+      var a = /[^0-9.]/;
+      a.lastIndex = 0;
+      var campo = numero;
+      if(a.test(campo.value)) {
+        campo.value = "";
+      }
+    }
+    
 		function removerItemGarantia(objeto) {
 			obj = objeto;
 			var transaction = db.transaction(["garantia"], "readwrite");
@@ -76,7 +89,7 @@
 
 				request.onsuccess = function () {
 					var cursor = request.result;
-
+          
 					if(cursor) {
 						var tr = jQuery("<tr></tr>");
 						var td = jQuery("<td>"+ cursor.value.id+ "</td>");
@@ -114,7 +127,7 @@
 				};
 			} //fim mostraListaGarantia
 		
-		//indexedDB
+		//Crianção do indexedDB
 		$(document).ready(function () {
 			window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
 
@@ -153,7 +166,6 @@
 					console.log("addBtn: Registro Adicionado com Sucesso ");
 					$("#result").html("Registro Adicionado com Sucesso");
 					mostraListaGarantia();
-					//limpaForm();
 
 					setTimeout(function () {
 						$("#result").html("");
@@ -166,6 +178,7 @@
 				};
 
 				var objectStore = transaction.objectStore("garantia");
+        
 				objectStore.add({ produto: produto, loja: loja, tmpGarantia: tmpGarantia });
 			}); //fim adicionar
 		}); //fim indexedDB
@@ -192,7 +205,7 @@
 
 			<tr>
 				<td width="12%">Tempo de Garantia</td>
-				<td colspan="2"> <input type="text" name="tmpGarantia" id="tmpGarantia" /> Meses
+				<td colspan="2"> <input type="text" onkeyup="somenteNumeros(this)" name="tmpGarantia" id="tmpGarantia" /> Meses
 					<input type="radio" name="radioBtn" checked value=30 id="garantiaMes" /> Anos
 					<input type="radio" name="radioBtn" value=365 id="garantiaAno" />
 				</td>
