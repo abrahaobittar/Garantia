@@ -4,13 +4,18 @@
 <head>
 	<title>Garantia</title>
   <link href="jquery-ui.css" rel="stylesheet" type="text/css" />
-	<script  src="http://code.jquery.com/jquery-3.1.1.min.js"></script>
-  <script  src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+	<script src="http://code.jquery.com/jquery-3.1.1.js"></script>
+  <script src="http://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 	<script type="text/javascript">
 	
 		var request = window.indexedDB.open("garantia",2);
 		var db;
 		var obj = {};
+		var objData = new Date();
+		var DIA = objData.getDate()+1;
+		var MES = objData.getMonth();
+		var ANO = objData.getFullYear();
+		var dataGarantia;
     
     /*
     * É preciso fazer uma tradução para usar o datepicker
@@ -42,10 +47,18 @@
     //implementando o datepicker
     $( function() {
       $( "#datepicker" ).datepicker({
-      showButtonPanel: true
+      showButtonPanel: true,
+      onSelect: function(data) {
+				dataGarantia = data;
+      }
       });
     });
-
+    
+    function diasNoMes(mes,ano){
+      var dd = new Date(ano, mes, 0);
+      return dd.getDate();
+    }
+    
     function somenteNumeros(numero){
       var a = /[^0-9.]/;
       a.lastIndex = 0;
@@ -53,7 +66,7 @@
       if(a.test(campo.value)) {
         campo.value = "";
       }
-    }
+    }//fim 
     
 		function removerItemGarantia(objeto) {
 			obj = objeto;
@@ -71,8 +84,9 @@
 			$("#produto").val("");
 			$("#loja").val("");
 			$("#tmpGarantia").val("");
+      $("#datepicker").val("");
 		}//fim limaForm
-
+		
 		function editarItemGarantia(objeto) {
 			obj = objeto;
 			$("#produto").val(obj.produto);
@@ -82,7 +96,6 @@
 
 		function mostraListaGarantia() {
 			$("#tabelaGarantia").html("");
-				console.log("abriu a funcao mostraListaGarantia");
 				var transaction = db.transaction(["garantia"], "readonly");
 				var objectStore = transaction.objectStore("garantia");
 				var request = objectStore.openCursor();
@@ -95,7 +108,8 @@
 						var td = jQuery("<td>"+ cursor.value.id+ "</td>");
 						var tdProduto = jQuery("<td>"+cursor.value.produto+"</td>");
 						var tdLoja = jQuery("<td>"+cursor.value.loja+"</td>");
-						var tdTmpGarantia = jQuery("<td>"+cursor.value.tmpGarantia+"</td>");
+						var tdTmpGarantia = jQuery("<td align=\"center\">"+cursor.value.tmpGarantia2+"</td>");
+						var tdEntradaGarantia = jQuery("<td>"+cursor.value.entradaGarantia+"</td>");
 						var tdEdit = jQuery("<td></td>");
 						var tdEditButton = jQuery("<button>Editar</button>");
 						tdEditButton.appendTo(tdEdit);
@@ -107,6 +121,7 @@
 						tdProduto.appendTo(tr);
 						tdLoja.appendTo(tr);
 						tdTmpGarantia.appendTo(tr);
+						tdEntradaGarantia.appendTo(tr);
 						tdEdit.appendTo(tr);
 						tdDelete.appendTo(tr);
 						
@@ -122,10 +137,9 @@
 
 					cursor.continue();
 					} else {
-						console.log("Nao tem mais objetos");
 					}
 				};
-			} //fim mostraListaGarantia
+		} //fim mostraListaGarantia
 		
 		//Crianção do indexedDB
 		$(document).ready(function () {
@@ -147,7 +161,6 @@
 				request.onsuccess = function (event) {
 					console.log("Banco de dados aberto com sucesso :)");
 					db = event.target.result;
-
 				};
 			}
 				
@@ -155,17 +168,26 @@
 			$("#addBtn").click(function (){
 				var produto = $("#produto").val();
 				var loja = $("#loja").val();
-				var tmpGarantia = parseInt($("#tmpGarantia").val());
-				var radioBtn = $("input[name='radioBtn']:checked").val();
+        var tmpGarantia2 = parseInt($("#qntMesOuAno").val());
+        var entradaGarantia = dataGarantia;
+				var cboxTipoGarantia = $("#mesOuAno").val();
 				var transaction = db.transaction(["garantia"], "readwrite");
-				console.log(radioBtn);
-				tmpGarantia = (tmpGarantia * radioBtn);
-				console.log(tmpGarantia);
+				
+        if(cboxTipoGarantia == 'Mes'){
+          tmpGarantia2 = (tmpGarantia2 * diasNoMes(MES,ANO));
+        } else if (cboxTipoGarantia == 'Ano'){
+          tmpGarantia2 = (tmpGarantia2 * 365);
+        } else if (cboxTipoGarantia == 'Vitalicia'){
+          tmpGarantia2 = "Vitalicia";
+        	console.log("vitalicia");
+          
+          validaCampos(teste);
+        }
 				
 				transaction.oncomplete = function (event) {
-					console.log("addBtn: Registro Adicionado com Sucesso ");
 					$("#result").html("Registro Adicionado com Sucesso");
 					mostraListaGarantia();
+          limpaForm();
 
 					setTimeout(function () {
 						$("#result").html("");
@@ -173,13 +195,12 @@
 				};
 
 				transaction.onerror = function (event) {
-					console.log("Erro :( ");
-					$("#result").html("Erro ao Adicionar");
+					$("#result").html("Erro ao adicionar");
 				};
 
 				var objectStore = transaction.objectStore("garantia");
-        
-				objectStore.add({ produto: produto, loja: loja, tmpGarantia: tmpGarantia });
+        objectStore.add({ produto: produto, loja: loja, tmpGarantia2: tmpGarantia2,
+        									entradaGarantia: entradaGarantia});
 			}); //fim adicionar
 		}); //fim indexedDB
 	</script>
@@ -195,33 +216,49 @@
 			</tr>
 			<tr>
 				<td width="12%">Produto</td>
-				<td colspan="2"> <input type="text" name="produto" id="produto" /></td>
+				<td colspan="2"> <input type="text" name="produto" id="produto"/></td>
 			</tr>
 
 			<tr>
 				<td width="12%">Loja</td>
-				<td colspan="2"> <input type="text" name="loja" id="loja" /></td>
+				<td colspan="2"> <input type="text" name="loja" id="loja"/></td>
 			</tr>
 
-			<tr>
-				<td width="12%">Tempo de Garantia</td>
-				<td colspan="2"> <input type="text" onkeyup="somenteNumeros(this)" name="tmpGarantia" id="tmpGarantia" /> Meses
-					<input type="radio" name="radioBtn" checked value=30 id="garantiaMes" /> Anos
-					<input type="radio" name="radioBtn" value=365 id="garantiaAno" />
-				</td>
-			</tr>
+      <tr>
+        <td width="12%">Garantia</td>
+        <td colspan="2"> <select name="mesOuAno" id="mesOuAno"> 
+                          <option value="Mes">Mes</option>
+                          <option value="Ano">Ano</option>
+                          <option value="Vitalicia">Vitalicio</option>
+                         </select>
+          <select name="qntMesOuAno" id="qntMesOuAno">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+          </select>
+        </td>
+      </tr>
       
       <tr>
         <td>Data inicio</td>
         <td colspan="2"> <input type="text" name="dataInicio" id="datepicker" />
       </tr>
-
+      
+      <tr>
+        <td>campo de teste id/name = teste </td>
+        <td colspan="2"> <input type="text" name="teste" id="teste"/>
+      </tr>
+      
+      
 			<tr>
 				<td width="12%">&nbsp;</td>
 				<td>
           <br>
 					<input type="button" name="addBtn" value="Adicionar" id="addBtn" />
-					<input type="button" name="removeBtn" value="Remover" id="removeBtn" />
 					<input type="button" onclick="mostraListaGarantia()" name="listBtn" value="Listar" id="listBtn" />
           <br><br><br>
 				</td>
@@ -237,7 +274,8 @@
 				<th>ID</th>
 				<th>Produto</th>
 				<th>Loja</th>
-				<th>Tempo de Garantia</th>
+				<th>Dias</th>
+        <th>Entrada</th>
 			</tr>
 			<tbody id="tabelaGarantia">
 			</tbody>

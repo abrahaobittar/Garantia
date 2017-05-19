@@ -1,0 +1,44 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd"
+>
+<html lang="es">
+<head>
+<title>Selecionar data com jQuery UI</title>
+  <link href="jquery-ui.css" rel="stylesheet" type="text/css" />
+	<script  src="http://code.jquery.com/jquery-3.1.1.min.js"></script>
+  <script  src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script>
+$(document).ready(function(){
+   $("#campodata").datepicker({
+      showOn: 'both',
+      buttonImage: 'calendar.png',
+      buttonImageOnly: true,
+      changeYear: true,
+      numberOfMonths: 2,
+      onSelect: function(textoData, objDatepicker){
+         $("#mensagem").html("<p>Voce selecionou: " + textoData + "</p>");
+      }
+   });
+})
+</script>
+</head>
+<body>
+
+<form>
+   Data: <input type="text" name="data" id="campodata">
+</form>
+
+<div id="mensagem"></div>
+
+
+<a href="#" id="mudames">Mostrar formulario para mudar mes</a>
+<script>
+$(document).ready(function(){
+   $("#mudames").click(function(){
+      $("#campodata").datepicker( "option", "changeMonth", true );
+   });
+});
+</script>
+
+</body>
+</html>
