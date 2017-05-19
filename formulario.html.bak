@@ -138,9 +138,8 @@
 
 					tdEditButton.click({obj: cursor.value}, function (event) {
 						editarItemGarantia(event.data.obj);	
-						$("#id").val(cursor.value.id);
 						$("#produto").val(cursor.value.produto);
-						$("#loja").val(cursor.value.loja);
+						$("#loja").val(cursor.value.produto);
 					});
 
 					tdDeleteButton.click({obj: cursor.value}, function (event) {
@@ -223,12 +222,6 @@
 					<hr>
 				</td>
 			</tr>
-
-			<tr>
-				<td>id</td>
-				<td><input type="text" name="id" id="id" /></td>
-			</tr>
-
 			<tr>
 				<td width="12%">Produto</td>
 				<td colspan="2"> <input type="text" name="produto" id="produto" required/></td>
