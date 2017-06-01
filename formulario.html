@@ -4,6 +4,9 @@
 <head>
 	<title>Garantia</title>
   <link href="jquery-ui.css" rel="stylesheet" type="text/css" />
+  <link href="garantia.css"  rel="stylesheet" type="text/css" />
+	<link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+  
 	<script src="http://code.jquery.com/jquery-3.1.1.js"></script>
   <script src="http://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
   <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.js"></script>
@@ -13,11 +16,11 @@
 		var db;
 		var obj = {};
 		var objData = new Date();
-		var DIA = objData.getDate()+1;
-		var MES = objData.getMonth();
+    var DIA = objData.getDate(); 
+		var MES = objData.getMonth()+1;
 		var ANO = objData.getFullYear();
 		var dataGarantia;
-  	
+
     /*
     * É preciso fazer uma tradução para usar o datepicker
     * O mesmo se encontraem ingles 
@@ -51,6 +54,7 @@
       showButtonPanel: true,
       onSelect: function(data) {
 				dataGarantia = data;
+        console.log(dataGarantia);
       }
       });
     });
@@ -95,11 +99,8 @@
 				
 				if(cursor){
 					var temp = cursor.value.id;
-					alert('law');
 					cursor.continue();
-				} else {
-					alert('acabaram');
-				}
+				} else {}
 			};
 		} //fim editarGarantia
 
@@ -182,6 +183,7 @@
         var tmpGarantia2 = parseInt($("#qntMesOuAno").val());
         var entradaGarantia = dataGarantia;
 				var cboxTipoGarantia = $("#mesOuAno").val();
+				var imagemNota = $("#imagem").val();
 				var transaction = db.transaction(["garantia"], "readwrite");
 
         if(cboxTipoGarantia == 'Mes'){
@@ -192,11 +194,19 @@
           tmpGarantia2 = "Vitalicia";
         }
         
+        var depois = new Date();
+        console.log(depois.getDate()+30);
+        
+        console.log(depois.setDate(depois.getDate() + diasNoMes(MES,ANO)));
+        console.log(depois.getDate());
+        var hoje = new Date();
+        console.log(hoje.setDate(hoje.getDate()));
+
+        
 				transaction.oncomplete = function (event) {
 					$("#result").html("Registro Adicionado com Sucesso");
 					mostraListaGarantia();
           limpaForm();
-          editarGarantia();
 
 					setTimeout(function () {
 						$("#result").html("");
@@ -209,7 +219,7 @@
 
 				var objectStore = transaction.objectStore("garantia");
         objectStore.add({ produto: produto, loja: loja, tmpGarantia2: tmpGarantia2,
-        									entradaGarantia: entradaGarantia});
+        									entradaGarantia: entradaGarantia, imagemNota: imagemNota});
 			}); //fim adicionar
 		}); //fim indexedDB
 	</script>
@@ -265,7 +275,7 @@
 			
 			<tr>
 				<td>Inserir Nota</td>
-				<td><input type="file" name="Arquivo Nota" id="arquivoNota" /></td>
+				<td><input type="file" name="imagem" id="imagem" /></td>
 			</tr>      
 
 			<tr>
