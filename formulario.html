@@ -3,9 +3,10 @@
 
 <head>
 	<title>Garantia</title>
-  <link href="jquery-ui.css" rel="stylesheet" type="text/css" />
-  <link href="garantia.css"  rel="stylesheet" type="text/css" />
+  <link href="css/jquery-ui.css" rel="stylesheet" type="text/css" />
+  <link href="css/garantia.css"  rel="stylesheet" type="text/css" />
 	<link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+	
 	<script src="http://code.jquery.com/jquery-3.1.1.js"></script>
   <script src="http://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
   <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.js"></script>
@@ -19,7 +20,7 @@
 		var MES = objData.getMonth()+1;
 		var ANO = objData.getFullYear();
 		var dataGarantia;
-
+		
     /*
     * É preciso fazer uma tradução para usar o datepicker
     * O mesmo se encontraem ingles 
@@ -57,12 +58,34 @@
       }
       });
     });
-    
+		
+		//Função exportaJson 
+		function exportaJson(){
+			var transaction = db.transaction(["garantia"],"readonly");
+			var objectStore = transaction.objectStore("garantia");
+			var request = objectStore.openCursor();
+			
+			request.onsuccess = function (evento){
+				var cursor = request.result;
+				var indices = [];
+				if (cursor){
+					indices.push(cursor.value);
+					console.log(cursor.value);
+					cursor.continue();
+					
+				} else{
+					console.log("Fim backup");
+				}
+			};
+		}//Fim exportaJson
+
+    //Funcao diasNoMes
     function diasNoMes(mes,ano){
       var dd = new Date(ano, mes, 0);
       return dd.getDate();
-    }
+    }//Fim diasNoMes
     
+    //Funcao somenteNumero
     function somenteNumeros(numero){
       var a = /[^0-9.]/;
       a.lastIndex = 0;
@@ -70,8 +93,9 @@
       if(a.test(campo.value)) {
         campo.value = "";
       }
-    }//fim 
+    }//Fim somenteNumero
     
+		//Funcao removerItemGarantia
 		function removerItemGarantia(objeto) {
 			obj = objeto;
 			var transaction = db.transaction(["garantia"], "readwrite");
@@ -80,13 +104,15 @@
 			mostraListaGarantia();	
 		} //fim removerItemGarantia
 
+		//Funcao limpaForm
 		function limpaForm(){
 			$("#produto").val("");
 			$("#loja").val("");
 			$("#tmpGarantia").val("");
       $("#datepicker").val("");
-		}//fim limaForm
+		}//fim limpaForm
 		
+		//Funcao editarItemGarantia
 		function editarItemGarantia() {
 			console.log("cheguei aqui: editarGarantia");	
 			var transaction = db.transaction(["garantia"],"readonly");
@@ -103,6 +129,7 @@
 			};
 		} //fim editarGarantia
 
+		//Funcao mostraListaGarantia
 		function mostraListaGarantia() {
 			$("#tabelaGarantia").html("");
 				var transaction = db.transaction(["garantia"], "readonly");
@@ -136,22 +163,22 @@
 						
 						$("#tabelaGarantia").append(tr);
 
-					tdEditButton.click({obj: cursor.value}, function (event) {
-						editarItemGarantia(event.data.obj);	
-						$("#id").val(cursor.value.id);
-						$("#produto").val(cursor.value.produto);
-						$("#loja").val(cursor.value.loja);
-					});
+						tdEditButton.click({obj: cursor.value}, function (event) {
+							editarItemGarantia(event.data.obj);	
+							$("#id").val(cursor.value.id);
+							$("#produto").val(cursor.value.produto);
+							$("#loja").val(cursor.value.loja);
+						});
 
-					tdDeleteButton.click({obj: cursor.value}, function (event) {
-						removerItemGarantia(event.data.obj);
-					});
-
-					cursor.continue();
+						tdDeleteButton.click({obj: cursor.value}, function (event) {
+							removerItemGarantia(event.data.obj);
+						});
+						
+						cursor.continue();
 					} else {}
 				};
 		} //fim mostraListaGarantia
-		
+
 		//Crianção do indexedDB
 		$(document).ready(function() {
 			window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
@@ -234,8 +261,8 @@
 			</tr>
 
 			<tr>
-				<td>id</td>
-				<td><input type="text" name="id" id="id" /></td>
+				<!--  <td>id</td> -->
+				<td><input type="hidden" name="id" id="id" /></td>
 			</tr>
 
 			<tr>
@@ -276,7 +303,12 @@
 				<td>Inserir Nota</td>
 				<td><input type="file" name="imagem" id="imagem" /></td>
 			</tr>      
-
+			
+			<tr>
+				<td>Gerar Backup (teste)</td>
+				<td><input type="button" value="backup" onclick="exportaJson()" name="backup" id="backup" /></td>
+			</tr>
+			
 			<tr>
 				<td width="12%">&nbsp;</td>
 				<td>
