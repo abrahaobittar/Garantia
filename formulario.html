@@ -20,7 +20,8 @@
 		var MES = objData.getMonth()+1;
 		var ANO = objData.getFullYear();
 		var dataGarantia;
-		
+		var jsonString;
+		var termino;
     /*
     * É preciso fazer uma tradução para usar o datepicker
     * O mesmo se encontraem ingles 
@@ -68,16 +69,43 @@
 			request.onsuccess = function (evento){
 				var cursor = request.result;
 				var indices = [];
+				
 				if (cursor){
 					indices.push(cursor.value);
 					console.log(cursor.value);
 					cursor.continue();
 					
 				} else{
+					json = JSON.stringify(indices);
 					console.log("Fim backup");
 				}
 			};
 		}//Fim exportaJson
+
+		//Função importaJson
+		function importFromJsonString() {
+			var transaction = db.transaction(db.objectStoreNames, "readwrite");
+			transaction.onerror = function(event) {
+		}
+		
+			var importObject = JSON.parse(jsonString);
+			_.each(db.objectStoreNames, function(storeName) {
+			let count = 0;
+			_.each(importObject[storeName], function(toAdd) {
+			var request = transaction.objectStore(storeName).add(toAdd);
+			
+			request.onsuccess = function(event) {
+					count++;
+					if(count == importObject[storeName].length) { // added all objects for this store
+						delete importObject[storeName];
+						if(_.keys(importObject).length == 0) {} // added all object stores
+					}
+				}
+		});
+	});
+}
+		//fim importaJson
+
 
     //Funcao diasNoMes
     function diasNoMes(mes,ano){
@@ -146,6 +174,7 @@
 						var tdLoja = jQuery("<td>"+cursor.value.loja+"</td>");
 						var tdTmpGarantia = jQuery("<td align=\"center\">"+cursor.value.tmpGarantia2+"</td>");
 						var tdEntradaGarantia = jQuery("<td>"+cursor.value.entradaGarantia+"</td>");
+						var tdTermino = jQuery("<td>"+cursor.value.termino+"</td>");
 						var tdEdit = jQuery("<td></td>");
 						var tdEditButton = jQuery("<button>Editar</button>");
 						tdEditButton.appendTo(tdEdit);
@@ -158,6 +187,7 @@
 						tdLoja.appendTo(tr);
 						tdTmpGarantia.appendTo(tr);
 						tdEntradaGarantia.appendTo(tr);
+						tdTermino.appendTo(tr);
 						tdEdit.appendTo(tr);
 						tdDelete.appendTo(tr);
 						
@@ -219,20 +249,22 @@
         }else if (cboxTipoGarantia == 'Vitalicia'){
           tmpGarantia2 = "Vitalicia";
         }
-        
-        var depois = new Date();
-        console.log(depois.getDate()+30);
-        
-        console.log(depois.setDate(depois.getDate() + diasNoMes(MES,ANO)));
-        console.log(depois.getDate());
-        var hoje = new Date();
-        console.log(hoje.setDate(hoje.getDate()));
 
+				console.log("estou chamando a variavel tmpGarantia2: "+tmpGarantia2)
+				var termino = somarData();
+        var depois = new Date();
+        // console.log(depois.getDate()+30);
         
+        // console.log(depois.setDate(depois.getDate() + diasNoMes(MES,ANO)));
+        // console.log(depois.getDate());
+        var hoje = new Date();
+        //console.log(hoje.setDate(hoje.getDate()));
+
+
 				transaction.oncomplete = function (event) {
 					$("#result").html("Registro Adicionado com Sucesso");
 					mostraListaGarantia();
-          limpaForm();
+					limpaForm();
 
 					setTimeout(function () {
 						$("#result").html("");
@@ -245,9 +277,58 @@
 
 				var objectStore = transaction.objectStore("garantia");
         objectStore.add({ produto: produto, loja: loja, tmpGarantia2: tmpGarantia2,
-        									entradaGarantia: entradaGarantia, imagemNota: imagemNota});
+        									entradaGarantia: entradaGarantia, imagemNota: imagemNota, termino: termino});
+
 			}); //fim adicionar
 		}); //fim indexedDB
+
+		function somarData() {
+			alert('oi')
+        // Tratamento das Variaveis.
+        var txtData = dataGarantia; //poder ser qualquer outra
+				console.log("Chamando tmpGarantia de dentro da funcao SomarData(); "+tmpGarantia2);
+        var DiasAdd = tmpGarantia2; // Aqui vem quantos dias você quer adicionar a data
+        var d = new Date();
+            // Aqui eu "mudo" a configuração de datas.
+            // Crio um obj Date e pego o campo txtData e 
+            // "recorto" ela com o split("/") e depois dou um
+            // reverse() para deixar ela em padrão americanos YYYY/MM/DD
+            // e logo em seguida eu coloco as barras "/" com o join("/")
+            // depois, em milisegundos, eu multiplico um dia (86400000 milisegundos)
+            // pelo número de dias que quero somar a txtData.
+         d.setTime(Date.parse(txtData.split("/").reverse().join("/"))+(86400000*(DiasAdd)))
+        
+        // Crio a var da DataFinal            
+        var DataFinal;
+
+        // Aqui comparo o dia no objeto d.getDate() e vejo se é menor que dia 10.            
+        if(d.getDate() < 10)
+        {
+            // Se o dia for menor que 10 eu coloca o zero no inicio
+            // e depois transformo em string com o toString()
+            // para o zero ser reconhecido como uma string e não
+            // como um número.
+            DataFinal = "0"+d.getDate().toString();
+        }
+        else
+        {    
+            // Aqui a mesma coisa, porém se a data for maior do que 10
+            // não tenho necessidade de colocar um zero na frente.
+            DataFinal = d.getDate().toString();    
+        }
+        
+        // Aqui, já com a soma do mês, vejo se é menor do que 10
+        // se for coloco o zero ou não.
+        if((d.getMonth()+1) < 10){
+            DataFinal += "/0"+(d.getMonth()+1).toString()+"/"+d.getFullYear().toString();
+        }
+        else
+        {
+            DataFinal += "/"+((d.getMonth()+1).toString())+"/"+d.getFullYear().toString();
+        }
+				
+				return DataFinal;
+		}
 	</script>
 </head>
 
@@ -307,6 +388,7 @@
 			<tr>
 				<td>Gerar Backup (teste)</td>
 				<td><input type="button" value="backup" onclick="exportaJson()" name="backup" id="backup" /></td>
+				<td><input type="button" value="importa" onclick="importFromJsonString()" name="importa" id="importa" /></td>
 			</tr>
 			
 			<tr>
@@ -315,6 +397,7 @@
           <br>
 					<input type="button" name="addBtn" value="Adicionar" id="addBtn" />
 					<input type="button" onclick="mostraListaGarantia()" name="listBtn" value="Listar" id="listBtn" />
+					
           <br><br><br>
 				</td>
 				<td width="3%">&nbsp;</td>
@@ -331,6 +414,7 @@
 				<th>Loja</th>
 				<th>Dias</th>
         <th>Entrada</th>
+				<th>Termino</th>
 			</tr>
 			<tbody id="tabelaGarantia">
 			</tbody>
