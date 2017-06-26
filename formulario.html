@@ -3,155 +3,156 @@
 
 <head>
 	<title>Garantia</title>
-  <!-- <link href="css/jquery-ui.css" rel="stylesheet" type="text/css" />  -->
-  <link href="css/garantia.css"  rel="stylesheet" type="text/css" />
+	<!-- <link href="css/jquery-ui.css" rel="stylesheet" type="text/css" />  -->
+	<link href="css/garantia.css" rel="stylesheet" type="text/css" />
 	<link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 	<link href="http://code.jquery.com/ui/1.10.4/themes/excite-bike/jquery-ui.css" rel="stylesheet" type="text/css" />
 
 	<script src="http://code.jquery.com/jquery-3.1.1.js"></script>
-  <script src="http://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-  <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.js"></script>
+	<script src="http://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+	<script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.js"></script>
 	<script type="text/javascript">
-	
-		var request = window.indexedDB.open("garantia",2);
+		var request = window.indexedDB.open("garantia", 2);
 		var db;
 		var obj = {};
 		var objData = new Date();
-    var DIA = objData.getDate(); 
-		var MES = objData.getMonth()+1;
+		var DIA = objData.getDate();
+		var MES = objData.getMonth() + 1;
 		var ANO = objData.getFullYear();
 		var dataGarantia;
 		var jsonString;
 		var terminoGarantia;
-		var tempoGarantia; 
-    /*
-    * É preciso fazer uma tradução para usar o datepicker
-    * O mesmo se encontraem ingles 
-    * Ex de uso: $.datepicker.setDefaults($.datepicker.regional['pt-BR']);
-    */
-    $.datepicker.regional['pt-BR'] = {
-      closeText: 'Fechar',
-      prevText: '&lt;Anterior',
-      nextText: 'Próximo&gt;',
-      currentText: 'Hoje',
-      monthNames: ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
-      monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
-      dayNames: ['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sabado'],
-      dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
-      dayNamesMin: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
-      weekHeader: 'Sm',
-      dateFormat: 'dd/mm/yy',
-      firstDay: 0,
-      isRTL: false,
-      showMonthAfterYear: false,
-      yearSuffix: ''};
-      
-    $.datepicker._gotoToday = function(id) { 
-    $(id).datepicker('setDate', new Date()).datepicker('hide').blur(); 
-};     
-    
-    $.datepicker.setDefaults($.datepicker.regional['pt-BR']);
-    //implementando o datepicker
-    $( function() {
-      $( "#datepicker" ).datepicker({
-      showButtonPanel: true,
-      onSelect: function(data) {
-				dataGarantia = data;
-        console.log(dataGarantia);
-      }
-      });
-    });
-		
+		var tempoGarantia;
+		/*
+		 * É preciso fazer uma tradução para usar o datepicker
+		 * O mesmo se encontraem ingles 
+		 * Ex de uso: $.datepicker.setDefaults($.datepicker.regional['pt-BR']);
+		 */
+		$.datepicker.regional['pt-BR'] = {
+			closeText: 'Fechar',
+			prevText: '&lt;Anterior',
+			nextText: 'Próximo&gt;',
+			currentText: 'Hoje',
+			monthNames: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro',
+				'Novembro', 'Dezembro'
+			],
+			monthNamesShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+			dayNames: ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sabado'],
+			dayNamesShort: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'],
+			dayNamesMin: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'],
+			weekHeader: 'Sm',
+			dateFormat: 'dd/mm/yy',
+			firstDay: 0,
+			isRTL: false,
+			showMonthAfterYear: false,
+			yearSuffix: ''
+		};
+
+		$.datepicker._gotoToday = function (id) {
+			$(id).datepicker('setDate', new Date()).datepicker('hide').blur();
+		};
+
+		$.datepicker.setDefaults($.datepicker.regional['pt-BR']);
+		//implementando o datepicker
+		$(function () {
+			$("#datepicker").datepicker({
+				showButtonPanel: true,
+				onSelect: function (data) {
+					dataGarantia = data;
+					console.log(dataGarantia);
+				}
+			});
+		});
+
 		//Função exportaJson 
-		function exportaJson(){
-			var transaction = db.transaction(["garantia"],"readonly");
+		function exportaJson() {
+			var transaction = db.transaction(["garantia"], "readonly");
 			var objectStore = transaction.objectStore("garantia");
 			var request = objectStore.openCursor();
-			
-			request.onsuccess = function (evento){
+
+			request.onsuccess = function (evento) {
 				var cursor = request.result;
 				var indices = [];
-				
-				if (cursor){
+
+				if (cursor) {
 					indices.push(cursor.value);
 					console.log(cursor.value);
 					cursor.continue();
-					
-				} else{
+
+				} else {
 					json = JSON.stringify(indices);
 					console.log("Fim backup");
 				}
 			};
-		}//Fim exportaJson
+		} //Fim exportaJson
 
 		//Função importaJson
 		function importFromJsonString() {
 			var transaction = db.transaction(db.objectStoreNames, "readwrite");
-			transaction.onerror = function(event) {
-		}
-		
+			transaction.onerror = function (event) {}
+
 			var importObject = JSON.parse(jsonString);
-			_.each(db.objectStoreNames, function(storeName) {
-			let count = 0;
-			_.each(importObject[storeName], function(toAdd) {
-			var request = transaction.objectStore(storeName).add(toAdd);
-			
-			request.onsuccess = function(event) {
-					count++;
-					if(count == importObject[storeName].length) { // added all objects for this store
-						delete importObject[storeName];
-						if(_.keys(importObject).length == 0) {} // added all object stores
+			_.each(db.objectStoreNames, function (storeName) {
+				let count = 0;
+				_.each(importObject[storeName], function (toAdd) {
+					var request = transaction.objectStore(storeName).add(toAdd);
+
+					request.onsuccess = function (event) {
+						count++;
+						if (count == importObject[storeName].length) { // added all objects for this store
+							delete importObject[storeName];
+							if (_.keys(importObject).length == 0) {} // added all object stores
+						}
 					}
-				}
-		});
-	});
-}
+				});
+			});
+		}
 		//fim importaJson
 
-    //Funcao diasNoMes
-    function diasNoMes(mes,ano){
-      var dd = new Date(ano, mes, 0);
-      return dd.getDate();
-    }//Fim diasNoMes
-    
-    //Funcao somenteNumero
-    function somenteNumeros(numero){
-      var a = /[^0-9.]/;
-      a.lastIndex = 0;
-      var campo = numero;
-      if(a.test(campo.value)) {
-        campo.value = "";
-      }
-    }//Fim somenteNumero
-    
+		//Funcao diasNoMes
+		function diasNoMes(mes, ano) {
+			var dd = new Date(ano, mes, 0);
+			return dd.getDate();
+		} //Fim diasNoMes
+
+		//Funcao somenteNumero
+		function somenteNumeros(numero) {
+			var a = /[^0-9.]/;
+			a.lastIndex = 0;
+			var campo = numero;
+			if (a.test(campo.value)) {
+				campo.value = "";
+			}
+		} //Fim somenteNumero
+
 		//Funcao removerItemGarantia
 		function removerItemGarantia(objeto) {
 			obj = objeto;
 			var transaction = db.transaction(["garantia"], "readwrite");
 			var objectStore = transaction.objectStore("garantia");
 			var request = objectStore.delete(obj.id);
-			mostraListaGarantia();	
+			mostraListaGarantia();
 		} //fim removerItemGarantia
 
 		//Funcao limpaForm
-		function limpaForm(){
+		function limpaForm() {
 			$("#produto").val("");
 			$("#loja").val("");
 			$("#tmpGarantia").val("");
-      $("#datepicker").val("");
-		}//fim limpaForm
-		
+			$("#datepicker").val("");
+		} //fim limpaForm
+
 		//Funcao editarItemGarantia
 		function editarItemGarantia() {
-			console.log("cheguei aqui: editarGarantia");	
-			var transaction = db.transaction(["garantia"],"readonly");
+			console.log("cheguei aqui: editarGarantia");
+			var transaction = db.transaction(["garantia"], "readonly");
 			var objectStore = transaction.objectStore("garantia");
 			var request = objectStore.openCursor();
-			
-			request.onsucess = function(evento){
+
+			request.onsucess = function (evento) {
 				var cursor = event.target.result;
-				
-				if(cursor){
+
+				if (cursor) {
 					var temp = cursor.value.id;
 					cursor.continue();
 				} else {}
@@ -161,62 +162,66 @@
 		//Funcao mostraListaGarantia
 		function mostraListaGarantia() {
 			$("#tabelaGarantia").html("");
-				var transaction = db.transaction(["garantia"], "readonly");
-				var objectStore = transaction.objectStore("garantia");
-				var request = objectStore.openCursor();
+			var transaction = db.transaction(["garantia"], "readonly");
+			var objectStore = transaction.objectStore("garantia");
+			var request = objectStore.openCursor();
 
-				request.onsuccess = function () {
-					var cursor = request.result;
-          
-					if(cursor) {
-						var tr = jQuery("<tr></tr>");
-						var td = jQuery("<td>"+ cursor.value.id+ "</td>");
-						var tdProduto = jQuery("<td>"+cursor.value.produto+"</td>");
-						var tdLoja = jQuery("<td>"+cursor.value.loja+"</td>");
-						var tdTmpGarantia = jQuery("<td align=\"center\">"+cursor.value.tmpGarantia2+"</td>");
-						var tdEntradaGarantia = jQuery("<td>"+cursor.value.entradaGarantia+"</td>");
-						var tdTerminoGarantia = jQuery("<td>"+cursor.value.terminoGarantia+"</td>");
-						var tdEdit = jQuery("<td></td>");
-						var tdEditButton = jQuery("<button>Editar</button>");
-						tdEditButton.appendTo(tdEdit);
-						var tdDelete = jQuery("<td></td>");
-						var tdDeleteButton = jQuery("<button>Deletar</button>");
-						tdDeleteButton.appendTo(tdDelete);
-						
-						td.appendTo(tr);
-						tdProduto.appendTo(tr);
-						tdLoja.appendTo(tr);
-						tdTmpGarantia.appendTo(tr);
-						tdEntradaGarantia.appendTo(tr);
-						tdTerminoGarantia.appendTo(tr);
-						tdEdit.appendTo(tr);
-						tdDelete.appendTo(tr);
-						
-						$("#tabelaGarantia").append(tr);
+			request.onsuccess = function () {
+				var cursor = request.result;
 
-						tdEditButton.click({obj: cursor.value}, function (event) {
-							editarItemGarantia(event.data.obj);	
-							$("#id").val(cursor.value.id);
-							$("#produto").val(cursor.value.produto);
-							$("#loja").val(cursor.value.loja);
-						});
+				if (cursor) {
+					var tr = jQuery("<tr></tr>");
+					var td = jQuery("<td>" + cursor.value.id + "</td>");
+					var tdProduto = jQuery("<td>" + cursor.value.produto + "</td>");
+					var tdLoja = jQuery("<td>" + cursor.value.loja + "</td>");
+					var tdTmpGarantia = jQuery("<td align=\"center\">" + cursor.value.tmpGarantia2 + "</td>");
+					var tdEntradaGarantia = jQuery("<td>" + cursor.value.entradaGarantia + "</td>");
+					var tdTerminoGarantia = jQuery("<td>" + cursor.value.terminoGarantia + "</td>");
+					var tdEdit = jQuery("<td></td>");
+					var tdEditButton = jQuery("<button>Editar</button>");
+					tdEditButton.appendTo(tdEdit);
+					var tdDelete = jQuery("<td></td>");
+					var tdDeleteButton = jQuery("<button>Deletar</button>");
+					tdDeleteButton.appendTo(tdDelete);
 
-						tdDeleteButton.click({obj: cursor.value}, function (event) {
-							removerItemGarantia(event.data.obj);
-						});
-						
-						cursor.continue();
-					} else {}
-				};
+					td.appendTo(tr);
+					tdProduto.appendTo(tr);
+					tdLoja.appendTo(tr);
+					tdTmpGarantia.appendTo(tr);
+					tdEntradaGarantia.appendTo(tr);
+					tdTerminoGarantia.appendTo(tr);
+					tdEdit.appendTo(tr);
+					tdDelete.appendTo(tr);
+
+					$("#tabelaGarantia").append(tr);
+
+					tdEditButton.click({
+						obj: cursor.value
+					}, function (event) {
+						editarItemGarantia(event.data.obj);
+						$("#id").val(cursor.value.id);
+						$("#produto").val(cursor.value.produto);
+						$("#loja").val(cursor.value.loja);
+					});
+
+					tdDeleteButton.click({
+						obj: cursor.value
+					}, function (event) {
+						removerItemGarantia(event.data.obj);
+					});
+
+					cursor.continue();
+				} else {}
+			};
 		} //fim mostraListaGarantia
 
 		//Crianção do indexedDB
-		$(document).ready(function() {
+		$(document).ready(function () {
 			window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
 
-			if (!window.indexedDB){
+			if (!window.indexedDB) {
 				console.log("Seu navegador não suporta o recurso HTML5 IndexedDB");
-			}else{
+			} else {
 				request.onerror = function (event) {
 					console.log("Erro ao abrir o banco de dados", event);
 				};
@@ -224,7 +229,10 @@
 				request.onupgradeneeded = function (event) {
 					console.log("Atualizando");
 					db = event.target.result;
-					var objectStore = db.createObjectStore("garantia", { keyPath: "id", autoIncrement: true });
+					var objectStore = db.createObjectStore("garantia", {
+						keyPath: "id",
+						autoIncrement: true
+					});
 				};
 
 				request.onsuccess = function (event) {
@@ -232,32 +240,32 @@
 					db = event.target.result;
 				};
 			}
-				
+
 			//botao adicionar
-			$("#addBtn").click(function (){
-        var produto = $("#produto").val();
+			$("#addBtn").click(function () {
+				var produto = $("#produto").val();
 				var loja = $("#loja").val();
-        var tmpGarantia2 = parseInt($("#qntMesOuAno").val());
-        var entradaGarantia = dataGarantia;
+				var tmpGarantia2 = parseInt($("#qntMesOuAno").val());
+				var entradaGarantia = dataGarantia;
 				var cboxTipoGarantia = $("#mesOuAno").val();
 				var imagemNota = $("#imagem").val();
 				var transaction = db.transaction(["garantia"], "readwrite");
 
-        if(cboxTipoGarantia == 'Mes'){
-          tmpGarantia2 = (tmpGarantia2 * diasNoMes(MES,ANO));
-        }else if (cboxTipoGarantia == 'Ano'){
-         	tmpGarantia2 = (tmpGarantia2 * 365);
-        }else if (cboxTipoGarantia == 'Vitalicia'){
-          tmpGarantia2 = "Vitalicia";
-        }
+				if (cboxTipoGarantia == 'Mes') {
+					tmpGarantia2 = (tmpGarantia2 * diasNoMes(MES, ANO));
+				} else if (cboxTipoGarantia == 'Ano') {
+					tmpGarantia2 = (tmpGarantia2 * 365);
+				} else if (cboxTipoGarantia == 'Vitalicia') {
+					tmpGarantia2 = "Vitalicia";
+				}
 
-				tempoGarantia =tmpGarantia2;
+				tempoGarantia = tmpGarantia2;
 
-				console.log("estou chamando a variavel tmpGarantia2: "+tmpGarantia2)
-				console.log("estou chamando a variavel global tempoGarantia: "+tempoGarantia);
+				console.log("estou chamando a variavel tmpGarantia2: " + tmpGarantia2)
+				console.log("estou chamando a variavel global tempoGarantia: " + tempoGarantia);
 				var terminoGarantia = somarData();
-        var depois = new Date();
-        var hoje = new Date();
+				var depois = new Date();
+				var hoje = new Date();
 
 				transaction.oncomplete = function (event) {
 					$("#result").html("Registro Adicionado com Sucesso");
@@ -274,9 +282,14 @@
 				};
 
 				var objectStore = transaction.objectStore("garantia");
-        objectStore.add({ produto: produto, loja: loja, tmpGarantia2: tmpGarantia2,
-        									entradaGarantia: entradaGarantia, imagemNota: imagemNota, 
-													terminoGarantia: terminoGarantia});
+				objectStore.add({
+					produto: produto,
+					loja: loja,
+					tmpGarantia2: tmpGarantia2,
+					entradaGarantia: entradaGarantia,
+					imagemNota: imagemNota,
+					terminoGarantia: terminoGarantia
+				});
 
 			}); //fim adicionar
 		}); //fim indexedDB
@@ -284,52 +297,46 @@
 		//funcao somarData
 		function somarData() {
 			alert('cheguei somarData')
-        // Tratamento das Variaveis.
-        var txtData = dataGarantia; //poder ser qualquer outra
-				console.log("Chamando tmpGarantia de dentro da funcao SomarData ");
-        var DiasAdd = tempoGarantia; // Aqui vem quantos dias você quer adicionar a data
-        var d = new Date();
-            // Aqui eu "mudo" a configuração de datas.
-            // Crio um obj Date e pego o campo txtData e 
-            // "recorto" ela com o split("/") e depois dou um
-            // reverse() para deixar ela em padrão americanos YYYY/MM/DD
-            // e logo em seguida eu coloco as barras "/" com o join("/")
-            // depois, em milisegundos, eu multiplico um dia (86400000 milisegundos)
-            // pelo número de dias que quero somar a txtData.
-         d.setTime(Date.parse(txtData.split("/").reverse().join("/"))+(86400000*(DiasAdd)))
-        
-        // Crio a var da DataFinal            
-        var DataFinal;
+			// Tratamento das Variaveis.
+			var txtData = dataGarantia; //poder ser qualquer outra
+			console.log("Chamando tmpGarantia de dentro da funcao SomarData ");
+			var DiasAdd = tempoGarantia; // Aqui vem quantos dias você quer adicionar a data
+			var d = new Date();
+			// Aqui eu "mudo" a configuração de datas.
+			// Crio um obj Date e pego o campo txtData e 
+			// "recorto" ela com o split("/") e depois dou um
+			// reverse() para deixar ela em padrão americanos YYYY/MM/DD
+			// e logo em seguida eu coloco as barras "/" com o join("/")
+			// depois, em milisegundos, eu multiplico um dia (86400000 milisegundos)
+			// pelo número de dias que quero somar a txtData.
+			d.setTime(Date.parse(txtData.split("/").reverse().join("/")) + (86400000 * (DiasAdd)))
 
-        // Aqui comparo o dia no objeto d.getDate() e vejo se é menor que dia 10.            
-        if(d.getDate() < 10)
-        {
-            // Se o dia for menor que 10 eu coloca o zero no inicio
-            // e depois transformo em string com o toString()
-            // para o zero ser reconhecido como uma string e não
-            // como um número.
-            DataFinal = "0"+d.getDate().toString();
-        }
-        else
-        {    
-            // Aqui a mesma coisa, porém se a data for maior do que 10
-            // não tenho necessidade de colocar um zero na frente.
-            DataFinal = d.getDate().toString();    
-        }
-        
-        // Aqui, já com a soma do mês, vejo se é menor do que 10
-        // se for coloco o zero ou não.
-        if((d.getMonth()+1) < 10){
-            DataFinal += "/0"+(d.getMonth()+1).toString()+"/"+d.getFullYear().toString();
-        }
-        else
-        {
-            DataFinal += "/"+((d.getMonth()+1).toString())+"/"+d.getFullYear().toString();
-        }
-				
-				return DataFinal;
+			// Crio a var da DataFinal            
+			var DataFinal;
+
+			// Aqui comparo o dia no objeto d.getDate() e vejo se é menor que dia 10.            
+			if (d.getDate() < 10) {
+				// Se o dia for menor que 10 eu coloca o zero no inicio
+				// e depois transformo em string com o toString()
+				// para o zero ser reconhecido como uma string e não
+				// como um número.
+				DataFinal = "0" + d.getDate().toString();
+			} else {
+				// Aqui a mesma coisa, porém se a data for maior do que 10
+				// não tenho necessidade de colocar um zero na frente.
+				DataFinal = d.getDate().toString();
+			}
+
+			// Aqui, já com a soma do mês, vejo se é menor do que 10
+			// se for coloco o zero ou não.
+			if ((d.getMonth() + 1) < 10) {
+				DataFinal += "/0" + (d.getMonth() + 1).toString() + "/" + d.getFullYear().toString();
+			} else {
+				DataFinal += "/" + ((d.getMonth() + 1).toString()) + "/" + d.getFullYear().toString();
+			}
+
+			return DataFinal;
 		} //fim somarData
-
 	</script>
 </head>
 
@@ -357,14 +364,14 @@
 				<td colspan="2"> <input type="text" name="loja" id="loja" required/></td>
 			</tr>
 
-      <tr>
-        <td width="12%">Garantia</td>
-        <td colspan="2"> <select name="mesOuAno" id="mesOuAno"> 
+			<tr>
+				<td width="12%">Garantia</td>
+				<td colspan="2"> <select name="mesOuAno" id="mesOuAno"> 
                           <option value="Mes">Mes</option>
                           <option value="Ano">Ano</option>
                           <option value="Vitalicia">Vitalicio</option>
                          </select>
-          <select name="qntMesOuAno" id="qntMesOuAno">
+					<select name="qntMesOuAno" id="qntMesOuAno">
             <option value="1">1</option>
             <option value="2">2</option>
             <option value="3">3</option>
@@ -373,33 +380,33 @@
             <option value="6">6</option>
             <option value="7">7</option>
           </select>
-        </td>
-      </tr>
-      
-      <tr>
-        <td>Data inicio</td>
-        <td colspan="2"> <input type="text" name="dataInicio" id="datepicker" />
-      </tr>
-			
+				</td>
+			</tr>
+
+			<tr>
+				<td>Data inicio</td>
+				<td colspan="2"> <input type="text" name="dataInicio" id="datepicker" />
+			</tr>
+
 			<tr>
 				<td>Inserir Nota</td>
 				<td><input type="file" name="imagem" id="imagem" /></td>
-			</tr>      
-			
+			</tr>
+
 			<tr>
 				<td>Gerar Backup (teste)</td>
 				<td><input type="button" value="backup" onclick="exportaJson()" name="backup" id="backup" /></td>
 				<td><input type="hidden" value="importa" onclick="importFromJsonString()" name="importa" id="importa" /></td>
 			</tr>
-			
+
 			<tr>
 				<td width="12%">&nbsp;</td>
 				<td>
-          <br>
+					<br>
 					<input type="button" name="addBtn" value="Adicionar" id="addBtn" />
 					<input type="button" onclick="mostraListaGarantia()" name="listBtn" value="Listar" id="listBtn" />
-					
-          <br><br><br>
+
+					<br><br><br>
 				</td>
 				<td width="3%">&nbsp;</td>
 			</tr>
@@ -414,7 +421,7 @@
 				<th>Produto</th>
 				<th>Loja</th>
 				<th>Dias</th>
-        <th>Entrada</th>
+				<th>Entrada</th>
 				<th>Termino da Garantia</th>
 			</tr>
 			<tbody id="tabelaGarantia">
@@ -422,4 +429,5 @@
 		</thead>
 	</table>
 </body>
+
 </html>
