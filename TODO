@@ -1,9 +1,10 @@
 TODO:
--	Deixar campo ID invisivel (nao serve para inserir os dados);
-- Implementar inserção de nota (imagem);
-- Cálculo de datas para saber quantos dias estão correndo a partir da data da garantia;
-- Backup indexeddb (!) 
-
+- Implementar inserir nota (imagem);
+- Backup indexeddb
 
 In progress:
-- Estilizar página;
+- Estilizar pagina;
+- Calculo de datas para saber quantos dias estao correndo a partir da data da garantia; 
+
+OK:
+- ID campo invisivel

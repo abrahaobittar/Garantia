@@ -3,10 +3,11 @@
 
 <head>
 	<title>Garantia</title>
-  <link href="css/jquery-ui.css" rel="stylesheet" type="text/css" />
+  <!-- <link href="css/jquery-ui.css" rel="stylesheet" type="text/css" />  -->
   <link href="css/garantia.css"  rel="stylesheet" type="text/css" />
 	<link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
-	
+	<link href="http://code.jquery.com/ui/1.10.4/themes/excite-bike/jquery-ui.css" rel="stylesheet" type="text/css" />
+
 	<script src="http://code.jquery.com/jquery-3.1.1.js"></script>
   <script src="http://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
   <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.js"></script>
@@ -21,7 +22,8 @@
 		var ANO = objData.getFullYear();
 		var dataGarantia;
 		var jsonString;
-		var termino;
+		var terminoGarantia;
+		var tempoGarantia; 
     /*
     * É preciso fazer uma tradução para usar o datepicker
     * O mesmo se encontraem ingles 
@@ -106,7 +108,6 @@
 }
 		//fim importaJson
 
-
     //Funcao diasNoMes
     function diasNoMes(mes,ano){
       var dd = new Date(ano, mes, 0);
@@ -174,7 +175,7 @@
 						var tdLoja = jQuery("<td>"+cursor.value.loja+"</td>");
 						var tdTmpGarantia = jQuery("<td align=\"center\">"+cursor.value.tmpGarantia2+"</td>");
 						var tdEntradaGarantia = jQuery("<td>"+cursor.value.entradaGarantia+"</td>");
-						var tdTermino = jQuery("<td>"+cursor.value.termino+"</td>");
+						var tdTerminoGarantia = jQuery("<td>"+cursor.value.terminoGarantia+"</td>");
 						var tdEdit = jQuery("<td></td>");
 						var tdEditButton = jQuery("<button>Editar</button>");
 						tdEditButton.appendTo(tdEdit);
@@ -187,7 +188,7 @@
 						tdLoja.appendTo(tr);
 						tdTmpGarantia.appendTo(tr);
 						tdEntradaGarantia.appendTo(tr);
-						tdTermino.appendTo(tr);
+						tdTerminoGarantia.appendTo(tr);
 						tdEdit.appendTo(tr);
 						tdDelete.appendTo(tr);
 						
@@ -250,16 +251,13 @@
           tmpGarantia2 = "Vitalicia";
         }
 
-				console.log("estou chamando a variavel tmpGarantia2: "+tmpGarantia2)
-				var termino = somarData();
-        var depois = new Date();
-        // console.log(depois.getDate()+30);
-        
-        // console.log(depois.setDate(depois.getDate() + diasNoMes(MES,ANO)));
-        // console.log(depois.getDate());
-        var hoje = new Date();
-        //console.log(hoje.setDate(hoje.getDate()));
+				tempoGarantia =tmpGarantia2;
 
+				console.log("estou chamando a variavel tmpGarantia2: "+tmpGarantia2)
+				console.log("estou chamando a variavel global tempoGarantia: "+tempoGarantia);
+				var terminoGarantia = somarData();
+        var depois = new Date();
+        var hoje = new Date();
 
 				transaction.oncomplete = function (event) {
 					$("#result").html("Registro Adicionado com Sucesso");
@@ -277,17 +275,19 @@
 
 				var objectStore = transaction.objectStore("garantia");
         objectStore.add({ produto: produto, loja: loja, tmpGarantia2: tmpGarantia2,
-        									entradaGarantia: entradaGarantia, imagemNota: imagemNota, termino: termino});
+        									entradaGarantia: entradaGarantia, imagemNota: imagemNota, 
+													terminoGarantia: terminoGarantia});
 
 			}); //fim adicionar
 		}); //fim indexedDB
 
+		//funcao somarData
 		function somarData() {
-			alert('oi')
+			alert('cheguei somarData')
         // Tratamento das Variaveis.
         var txtData = dataGarantia; //poder ser qualquer outra
-				console.log("Chamando tmpGarantia de dentro da funcao SomarData(); "+tmpGarantia2);
-        var DiasAdd = tmpGarantia2; // Aqui vem quantos dias você quer adicionar a data
+				console.log("Chamando tmpGarantia de dentro da funcao SomarData ");
+        var DiasAdd = tempoGarantia; // Aqui vem quantos dias você quer adicionar a data
         var d = new Date();
             // Aqui eu "mudo" a configuração de datas.
             // Crio um obj Date e pego o campo txtData e 
@@ -328,7 +328,8 @@
         }
 				
 				return DataFinal;
-		}
+		} //fim somarData
+
 	</script>
 </head>
 
@@ -388,7 +389,7 @@
 			<tr>
 				<td>Gerar Backup (teste)</td>
 				<td><input type="button" value="backup" onclick="exportaJson()" name="backup" id="backup" /></td>
-				<td><input type="button" value="importa" onclick="importFromJsonString()" name="importa" id="importa" /></td>
+				<td><input type="hidden" value="importa" onclick="importFromJsonString()" name="importa" id="importa" /></td>
 			</tr>
 			
 			<tr>
@@ -414,7 +415,7 @@
 				<th>Loja</th>
 				<th>Dias</th>
         <th>Entrada</th>
-				<th>Termino</th>
+				<th>Termino da Garantia</th>
 			</tr>
 			<tbody id="tabelaGarantia">
 			</tbody>
