@@ -1,3 +1,4 @@
 # Garantia
 
-Simples projeto pessoal controle de garantias de compras 
+Projeto para controlar e monitorar a data da garantia dos produtos usando IndexedDB.
+

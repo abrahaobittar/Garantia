@@ -3,7 +3,6 @@
 
 <head>
 	<title>Garantia</title>
-	<!-- <link href="css/jquery-ui.css" rel="stylesheet" type="text/css" />  -->
 	<link href="css/garantia.css" rel="stylesheet" type="text/css" />
 	<link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 	<link href="http://code.jquery.com/ui/1.10.4/themes/excite-bike/jquery-ui.css" rel="stylesheet" type="text/css" />
@@ -161,6 +160,7 @@
 
 		//Funcao mostraListaGarantia
 		function mostraListaGarantia() {
+			console.log("debug: cheguei mostraListaGarantia()");
 			$("#tabelaGarantia").html("");
 			var transaction = db.transaction(["garantia"], "readonly");
 			var objectStore = transaction.objectStore("garantia");
@@ -175,8 +175,8 @@
 					var tdProduto = jQuery("<td>" + cursor.value.produto + "</td>");
 					var tdLoja = jQuery("<td>" + cursor.value.loja + "</td>");
 					var tdTmpGarantia = jQuery("<td align=\"center\">" + cursor.value.tmpGarantia2 + "</td>");
-					var tdEntradaGarantia = jQuery("<td>" + cursor.value.entradaGarantia + "</td>");
-					var tdTerminoGarantia = jQuery("<td>" + cursor.value.terminoGarantia + "</td>");
+					var tdEntradaGarantia = jQuery("<td align=\"center\">" + cursor.value.entradaGarantia + "</td>");
+					var tdTerminoGarantia = jQuery("<td align=\"center\">" + cursor.value.terminoGarantia + "</td>");
 					var tdEdit = jQuery("<td></td>");
 					var tdEditButton = jQuery("<button>Editar</button>");
 					tdEditButton.appendTo(tdEdit);
@@ -389,7 +389,7 @@
 			</tr>
 
 			<tr>
-				<td>Inserir Nota</td>
+				<td>Inserir Nota(teste)</td>
 				<td><input type="file" name="imagem" id="imagem" /></td>
 			</tr>
 
@@ -398,7 +398,7 @@
 				<td><input type="button" value="backup" onclick="exportaJson()" name="backup" id="backup" /></td>
 				<td><input type="hidden" value="importa" onclick="importFromJsonString()" name="importa" id="importa" /></td>
 			</tr>
-
+				
 			<tr>
 				<td width="12%">&nbsp;</td>
 				<td>
@@ -421,7 +421,7 @@
 				<th>Produto</th>
 				<th>Loja</th>
 				<th>Dias</th>
-				<th>Entrada</th>
+				<th>Entrada da Garantia</th>
 				<th>Termino da Garantia</th>
 			</tr>
 			<tbody id="tabelaGarantia">
