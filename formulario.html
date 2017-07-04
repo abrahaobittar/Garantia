@@ -24,7 +24,7 @@
 		var tempoGarantia;
 		/*
 		 * É preciso fazer uma tradução para usar o datepicker
-		 * O mesmo se encontraem ingles 
+		 * O mesmo se encontraem ingles
 		 * Ex de uso: $.datepicker.setDefaults($.datepicker.regional['pt-BR']);
 		 */
 		$.datepicker.regional['pt-BR'] = {
@@ -63,7 +63,7 @@
 			});
 		});
 
-		//Função exportaJson 
+		//Função exportaJson
 		function exportaJson() {
 			var transaction = db.transaction(["garantia"], "readonly");
 			var objectStore = transaction.objectStore("garantia");
@@ -178,10 +178,10 @@
 					var tdEntradaGarantia = jQuery("<td align=\"center\">" + cursor.value.entradaGarantia + "</td>");
 					var tdTerminoGarantia = jQuery("<td align=\"center\">" + cursor.value.terminoGarantia + "</td>");
 					var tdEdit = jQuery("<td></td>");
-					var tdEditButton = jQuery("<button>Editar</button>");
+					var tdEditButton = jQuery("<button class='btn btn-primary'>Editar</button>");
 					tdEditButton.appendTo(tdEdit);
 					var tdDelete = jQuery("<td></td>");
-					var tdDeleteButton = jQuery("<button>Deletar</button>");
+					var tdDeleteButton = jQuery("<button class='btn btn-danger'>Deletar</button>");
 					tdDeleteButton.appendTo(tdDelete);
 
 					td.appendTo(tr);
@@ -303,7 +303,7 @@
 			var DiasAdd = tempoGarantia; // Aqui vem quantos dias você quer adicionar a data
 			var d = new Date();
 			// Aqui eu "mudo" a configuração de datas.
-			// Crio um obj Date e pego o campo txtData e 
+			// Crio um obj Date e pego o campo txtData e
 			// "recorto" ela com o split("/") e depois dou um
 			// reverse() para deixar ela em padrão americanos YYYY/MM/DD
 			// e logo em seguida eu coloco as barras "/" com o join("/")
@@ -311,10 +311,10 @@
 			// pelo número de dias que quero somar a txtData.
 			d.setTime(Date.parse(txtData.split("/").reverse().join("/")) + (86400000 * (DiasAdd)))
 
-			// Crio a var da DataFinal            
+			// Crio a var da DataFinal
 			var DataFinal;
 
-			// Aqui comparo o dia no objeto d.getDate() e vejo se é menor que dia 10.            
+			// Aqui comparo o dia no objeto d.getDate() e vejo se é menor que dia 10.
 			if (d.getDate() < 10) {
 				// Se o dia for menor que 10 eu coloca o zero no inicio
 				// e depois transformo em string com o toString()
@@ -341,93 +341,95 @@
 </head>
 
 <body>
-	<form id="formulario" method="post">
-		<table border="0" width="100%">
-			<tr>
-				<td colspan="3">
-					<hr>
-				</td>
-			</tr>
+   <div class="container">
+      <div class="col-md-6">
+        	<form id="formulario" method="post">
+        		<table class="table">
+        			<input type="hidden" name="id" id="id">
 
-			<tr>
-				<!--  <td>id</td> -->
-				<td><input type="hidden" name="id" id="id" /></td>
-			</tr>
+        			<tr>
+        				<td width="12%">Produto</td>
+        				<td colspan="2"> <input type="text" name="produto" id="produto" required></td>
+        			</tr>
 
-			<tr>
-				<td width="12%">Produto</td>
-				<td colspan="2"> <input type="text" name="produto" id="produto" required/></td>
-			</tr>
+        			<tr>
+        				<td width="12%">Loja</td>
+        				<td colspan="2"> <input type="text" name="loja" id="loja" required/></td>
+        			</tr>
 
-			<tr>
-				<td width="12%">Loja</td>
-				<td colspan="2"> <input type="text" name="loja" id="loja" required/></td>
-			</tr>
+        			<tr>
+        				<td width="12%">Garantia</td>
+        				<td colspan="2"> <select name="mesOuAno" id="mesOuAno" class="form-control">
+                                  <option value="Mes">Mes</option>
+                                  <option value="Ano">Ano</option>
+                                  <option value="Vitalicia">Vitalicio</option>
+                                 </select>
+        					<select name="qntMesOuAno" id="qntMesOuAno" class="form-control">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                  </select>
+        		    </td>
+        			</tr>
 
-			<tr>
-				<td width="12%">Garantia</td>
-				<td colspan="2"> <select name="mesOuAno" id="mesOuAno"> 
-                          <option value="Mes">Mes</option>
-                          <option value="Ano">Ano</option>
-                          <option value="Vitalicia">Vitalicio</option>
-                         </select>
-					<select name="qntMesOuAno" id="qntMesOuAno">
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-            <option value="6">6</option>
-            <option value="7">7</option>
-          </select>
-				</td>
-			</tr>
+        			<tr>
+        				<td>Data inicio</td>
+        				<td colspan="2"> <input type="text" name="dataInicio" id="datepicker" />
+        			</tr>
 
-			<tr>
-				<td>Data inicio</td>
-				<td colspan="2"> <input type="text" name="dataInicio" id="datepicker" />
-			</tr>
+        			<tr>
+        				<td>Inserir Nota(teste)</td>
+        				<td><input type="file" name="imagem" id="imagem" /></td>
+        			</tr>
 
-			<tr>
-				<td>Inserir Nota(teste)</td>
-				<td><input type="file" name="imagem" id="imagem" /></td>
-			</tr>
+        			<tr>
+        				<td>Gerar Backup (teste)</td>
+        				<td><input type="button" class="btn btn-default" value="backup" onclick="exportaJson()" name="backup" id="backup" /></td>
+        				<td><input type="hidden" value="importa" onclick="importFromJsonString()" name="importa" id="importa" /></td>
+        			</tr>
 
-			<tr>
-				<td>Gerar Backup (teste)</td>
-				<td><input type="button" value="backup" onclick="exportaJson()" name="backup" id="backup" /></td>
-				<td><input type="hidden" value="importa" onclick="importFromJsonString()" name="importa" id="importa" /></td>
-			</tr>
-				
-			<tr>
-				<td width="12%">&nbsp;</td>
-				<td>
-					<br>
-					<input type="button" name="addBtn" value="Adicionar" id="addBtn" />
-					<input type="button" onclick="mostraListaGarantia()" name="listBtn" value="Listar" id="listBtn" />
+        			<tr>
+        				<td width="12%">&nbsp;</td>
+        				<td>
+        					<br>
+        					<input type="button" class="btn btn-default" name="addBtn" value="Adicionar" id="addBtn" />
+        					<input type="button" class="btn btn-default" onclick="mostraListaGarantia()" name="listBtn" value="Listar" id="listBtn" />
 
-					<br><br><br>
-				</td>
-				<td width="3%">&nbsp;</td>
-			</tr>
-		</table>
-	</form>
-	<div id="result"></div>
-
-	<table border="1px" cellpadding="5px" cellspacing="0">
-		<thead>
-			<tr>
-				<th>ID</th>
-				<th>Produto</th>
-				<th>Loja</th>
-				<th>Dias</th>
-				<th>Entrada da Garantia</th>
-				<th>Termino da Garantia</th>
-			</tr>
-			<tbody id="tabelaGarantia">
-			</tbody>
-		</thead>
-	</table>
+        					<br><br><br>
+        				</td>
+        				<td width="3%">&nbsp;</td>
+        			</tr>
+        		</table>
+        	</form>
+      </div>
+      <div class="col-md-6">
+            <div class="table-responsive">
+        	<table id="formulario" class="table table-striped">
+        		<thead>
+        			<tr>
+        				<th>ID</th>
+        				<th>Produto</th>
+        				<th>Loja</th>
+        				<th>Dias</th>
+        				<th>Entrada da Garantia</th>
+        				<th>Termino da Garantia</th>
+        				<th class="">Editar</th>
+        				<th class="">Excluir</th>
+        			</tr>
+        			<tr>
+                        <div class="active" id="result"></div>
+        			</tr>
+        			<tbody id="tabelaGarantia">
+        			</tbody>
+        		</thead>
+        	</table>
+           </div>
+     </div>
+    </div>
 </body>
 
 </html>
