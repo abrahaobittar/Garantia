@@ -177,6 +177,7 @@
 					var tdTmpGarantia = jQuery("<td align=\"center\">" + cursor.value.tmpGarantia2 + "</td>");
 					var tdEntradaGarantia = jQuery("<td align=\"center\">" + cursor.value.entradaGarantia + "</td>");
 					var tdTerminoGarantia = jQuery("<td align=\"center\">" + cursor.value.terminoGarantia + "</td>");
+					var tdXmlNota =jQuery("<td>"+"<a href="+cursor.value.xmlNota+">"+"XML"+"</td>");
 					var tdEdit = jQuery("<td></td>");
 					var tdEditButton = jQuery("<button class='btn btn-primary'>Editar</button>");
 					tdEditButton.appendTo(tdEdit);
@@ -190,6 +191,7 @@
 					tdTmpGarantia.appendTo(tr);
 					tdEntradaGarantia.appendTo(tr);
 					tdTerminoGarantia.appendTo(tr);
+					tdXmlNota.appendTo(tr);
 					tdEdit.appendTo(tr);
 					tdDelete.appendTo(tr);
 
@@ -248,7 +250,7 @@
 				var tmpGarantia2 = parseInt($("#qntMesOuAno").val());
 				var entradaGarantia = dataGarantia;
 				var cboxTipoGarantia = $("#mesOuAno").val();
-				var imagemNota = $("#imagem").val();
+				var xmlNota = $("#xmlNota").val();
 				var transaction = db.transaction(["garantia"], "readwrite");
 
 				if (cboxTipoGarantia == 'Mes') {
@@ -287,7 +289,7 @@
 					loja: loja,
 					tmpGarantia2: tmpGarantia2,
 					entradaGarantia: entradaGarantia,
-					imagemNota: imagemNota,
+					xmlNota: xmlNota,
 					terminoGarantia: terminoGarantia
 				});
 
@@ -296,7 +298,7 @@
 
 		//funcao somarData
 		function somarData() {
-			alert('cheguei somarData')
+			//alert('cheguei somarData')
 			// Tratamento das Variaveis.
 			var txtData = dataGarantia; //poder ser qualquer outra
 			console.log("Chamando tmpGarantia de dentro da funcao SomarData ");
@@ -382,8 +384,8 @@
         			</tr>
 
         			<tr>
-        				<td>Inserir Nota(teste)</td>
-        				<td><input type="file" name="imagem" id="imagem" /></td>
+        				<td>Inserir XML</td>
+        				<td><input type="file" name="xmlNota" id="xmlNota" /></td>
         			</tr>
 
         			<tr>

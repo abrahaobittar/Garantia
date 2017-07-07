@@ -1,10 +1,10 @@
 TODO:
-- Implementar inserir nota (imagem);
+- Implementar inserir nota (XML);
 - Backup indexeddb
 
 In progress:
-- Estilizar pagina;
-- Calculo de datas para saber quantos dias estao correndo a partir da data da garantia; 
 
 OK:
 - ID campo invisivel
+- Estilizar pagina
+- Calculo de datas para saber quantos dias estao correndo a partir da data da garantia; 
