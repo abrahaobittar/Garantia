@@ -177,7 +177,7 @@
 					var tdTmpGarantia = jQuery("<td align=\"center\">" + cursor.value.tmpGarantia2 + "</td>");
 					var tdEntradaGarantia = jQuery("<td align=\"center\">" + cursor.value.entradaGarantia + "</td>");
 					var tdTerminoGarantia = jQuery("<td align=\"center\">" + cursor.value.terminoGarantia + "</td>");
-					var tdXmlNota =jQuery("<td>"+"<a href="+cursor.value.xmlNota+">"+"XML"+"</td>");
+					var tdXmlNota =jQuery("<td align=\"center\">"+cursor.value.xmlNota+"</td>");
 					var tdEdit = jQuery("<td></td>");
 					var tdEditButton = jQuery("<button class='btn btn-primary'>Editar</button>");
 					tdEditButton.appendTo(tdEdit);
@@ -384,8 +384,8 @@
         			</tr>
 
         			<tr>
-        				<td>Inserir XML</td>
-        				<td><input type="file" name="xmlNota" id="xmlNota" /></td>
+        				<td>Chave de Consulta XML</td>
+        				<td colspan="2"><input type="text" name="xmlNota" id="xmlNota" /></td>
         			</tr>
 
         			<tr>
