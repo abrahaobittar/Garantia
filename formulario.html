@@ -164,7 +164,7 @@
 			$("#tabelaGarantia").html("");
 			var transaction = db.transaction(["garantia"], "readonly");
 			var objectStore = transaction.objectStore("garantia");
-			var request = objectStore.openCursor();
+			var request = objectStore.openCursor(null,'prev');
 
 			request.onsuccess = function () {
 				var cursor = request.result;
@@ -177,12 +177,12 @@
 					var tdTmpGarantia = jQuery("<td align=\"center\">" + cursor.value.tmpGarantia2 + "</td>");
 					var tdEntradaGarantia = jQuery("<td align=\"center\">" + cursor.value.entradaGarantia + "</td>");
 					var tdTerminoGarantia = jQuery("<td align=\"center\">" + cursor.value.terminoGarantia + "</td>");
-					var tdXmlNota =jQuery("<td align=\"center\">"+cursor.value.xmlNota+"</td>");
-					var tdEdit = jQuery("<td></td>");
-					var tdEditButton = jQuery("<button class='btn btn-primary'>Editar</button>");
+					//var tdXmlNota =jQuery("<td align=\"center\">"+cursor.value.xmlNota+"</td>");
+					var tdEdit = jQuery("<td align=\"center\"></td>");
+					var tdEditButton = jQuery("<button align=\"center\" class='btn btn-primary'>Editar</button>");
 					tdEditButton.appendTo(tdEdit);
-					var tdDelete = jQuery("<td></td>");
-					var tdDeleteButton = jQuery("<button class='btn btn-danger'>Deletar</button>");
+					var tdDelete = jQuery("<td align=\"center\"></td>");
+					var tdDeleteButton = jQuery("<button align=\"center\" class='btn btn-danger'>Deletar</button>");
 					tdDeleteButton.appendTo(tdDelete);
 
 					td.appendTo(tr);
@@ -191,7 +191,7 @@
 					tdTmpGarantia.appendTo(tr);
 					tdEntradaGarantia.appendTo(tr);
 					tdTerminoGarantia.appendTo(tr);
-					tdXmlNota.appendTo(tr);
+					//tdXmlNota.appendTo(tr);
 					tdEdit.appendTo(tr);
 					tdDelete.appendTo(tr);
 
@@ -250,7 +250,7 @@
 				var tmpGarantia2 = parseInt($("#qntMesOuAno").val());
 				var entradaGarantia = dataGarantia;
 				var cboxTipoGarantia = $("#mesOuAno").val();
-				var xmlNota = $("#xmlNota").val();
+				//var xmlNota = $("#xmlNota").val();
 				var transaction = db.transaction(["garantia"], "readwrite");
 
 				if (cboxTipoGarantia == 'Mes') {
@@ -289,7 +289,7 @@
 					loja: loja,
 					tmpGarantia2: tmpGarantia2,
 					entradaGarantia: entradaGarantia,
-					xmlNota: xmlNota,
+					//xmlNota: xmlNota,
 					terminoGarantia: terminoGarantia
 				});
 
@@ -365,7 +365,8 @@
                                   <option value="Mes">Mes</option>
                                   <option value="Ano">Ano</option>
                                   <option value="Vitalicia">Vitalicio</option>
-                                 </select>
+								 </select>
+								 <br>
         					<select name="qntMesOuAno" id="qntMesOuAno" class="form-control">
                     <option value="1">1</option>
                     <option value="2">2</option>
@@ -413,14 +414,14 @@
         	<table id="formulario" class="table table-striped">
         		<thead>
         			<tr>
-        				<th>ID</th>
-        				<th>Produto</th>
-        				<th>Loja</th>
-        				<th>Dias</th>
-        				<th>Entrada da Garantia</th>
-        				<th>Termino da Garantia</th>
-        				<th class="">Editar</th>
-        				<th class="">Excluir</th>
+        				<th align="center">ID</th>
+        				<th align="center">Produto</th>
+        				<th align="center">Loja</th>
+        				<th align="center">Dias</th>
+        				<th align="center">Inicio</th>
+        				<th align="center">Fim</th>
+        				<th align="center" class="">Editar</th>
+        				<th align="center" class="">Excluir</th>
         			</tr>
         			<tr>
                         <div class="active" id="result"></div>
